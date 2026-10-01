@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f4ee">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet">
+<title>NARUSASU PROMPT GACHA v5.3.3 Light Gray</title>
+<style>
+:root{--bg:#f4f4f1;--ink:#171717;--muted:#777;--line:#d8d3ca;--card:#ffffff;--orange:#f69500;--blue:#012a91}
+*{box-sizing:border-box}
+body{margin:0;min-height:100svh;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP","Source Han Sans JP","Hiragino Sans","Yu Gothic",sans-serif;display:grid;place-items:center;padding:28px 18px;font-weight:900}
+main{width:min(720px,100%);text-align:center}
+.eyebrow{font-size:11px;letter-spacing:.22em;margin-bottom:10px}
+h1{font-size:clamp(28px,7vw,52px);line-height:1;margin:0 0 10px;letter-spacing:.02em;font-weight:900}
+.intro{color:var(--muted);line-height:1.8;margin:0 auto 28px;font-weight:900}
+.intro-main{display:block;font-size:12px;margin-top:16px}
+.intro-sub{display:block;font-size:12px;margin-top:2px}
+.machine{border:1px solid var(--ink);border-radius:24px;padding:18px;background:var(--card);box-shadow:8px 8px 0 var(--ink)}
+.slot{min-height:82px;border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;padding:12px 10px;background:white;font-size:clamp(20px,5vw,31px);font-weight:900;line-height:1.35}
+.x{font-family:Georgia,serif;font-style:italic;font-size:24px;padding:6px 0}
+.actions{display:grid;gap:10px;margin-top:20px}
+button,a.share{appearance:none;border:1px solid var(--ink);border-radius:999px;padding:15px 18px;font:inherit;font-weight:900;cursor:pointer;text-decoration:none;color:var(--ink);background:transparent}
+#spin{background:var(--ink);color:var(--bg);font-size:17px}
+.shares{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.note{margin-top:22px;font-size:11px;color:var(--muted);line-height:1.8}
+.credit{
+  margin-top:22px;
+  font-size:9px;
+  line-height:1.7;
+  color:var(--muted);
+  text-align:center;
+  letter-spacing:.06em;
+}
+.credit strong{
+  display:block;
+  color:var(--ink);
+  font-weight:700;
+}
+.credit .url{
+  display:block;
+  word-break:break-all;
+}
+.logo-n{color:var(--orange)}
+.logo-s{color:var(--blue)}
+.flash{animation:pop .22s ease}
+@keyframes pop{0%{transform:scale(.96);opacity:.45}100%{transform:scale(1);opacity:1}}
+@media(max-width:430px){.machine{box-shadow:5px 5px 0 var(--ink)}.shares{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="logo-n">N</span>ARU<span class="logo-s">S</span>ASU お題ガチャ</h1>
+  <p class="intro"><span class="intro-main">好きなお題が出るまで何度でも回せます。</span><span class="intro-sub">漫画・小説・イラスト・コスプレ・萌え語りなど、ご自由にどうぞ！</span></p>
+
+  <section class="machine" aria-live="polite">
+    <div class="slot" id="scene">深夜</div>
+    <div class="x">×</div>
+    <div class="slot" id="condition">ふたりきり</div>
+    <div class="x">×</div>
+    <div class="slot" id="keyword">約束</div>
+  </section>
+
+  <div class="actions">
+    <button id="spin">ガチャをまわす</button>
+    <div class="shares">
+      <a class="share" id="shareX" target="_blank" rel="noopener">Xでシェア</a>
+      <a class="share" id="shareBsky" target="_blank" rel="noopener">Blueskyでシェア</a>
+    </div>
+  </div>
+  <p class="note">※ナルサス限定でご利用ください！</p>
+  <div class="credit">
+    <strong>2027 NARUSASU ONLY PROJECT</strong>
+    <strong>CUSTOM YOUR NARUSASU</strong>
+    <a class="url" href="https://cyns2027.github.io/custom-your-narusasu/">https://cyns2027.github.io/custom-your-narusasu/</a>
+  </div>
+</main>
+<script>
+const scenes = ["深夜", "夜明け前", "朝焼け", "早朝", "昼下がり", "夕暮れ", "真夜中", "午前二時", "寝起き", "眠れない夜", "雨の日", "雨上がり", "土砂降り", "初雪", "雪の日", "台風", "雷", "強い風", "快晴", "曇り空", "春", "桜の季節", "夏", "真夏", "夏の終わり", "秋", "冬", "年末", "年明け", "季節の変わり目", "帰り道", "待ち合わせ", "別れ際", "出発前", "帰ってきた日", "久しぶりの再会", "旅の途中", "遠出", "寄り道", "道に迷って", "休日", "休日前夜", "仕事終わり", "忙しい朝", "暇な午後", "予定のない日", "約束の日", "記念日", "誕生日", "大晦日", "祭り", "花火", "海", "川辺", "山の中", "公園", "屋上", "駅", "ホーム", "車の中", "電車の中", "台所", "食卓", "玄関", "ベッドの上", "ソファ", "風呂上がり", "コンビニ", "スーパー", "飲み屋", "誰もいない部屋", "人混み", "静かな場所", "知らない街", "懐かしい場所", "いつもの場所", "初めての場所", "逃げ場のない場所", "ふたりだけの場所", "墓前", "食事中", "買い物中", "散歩中", "移動中", "留守番", "看病", "徹夜", "酔った夜", "二日酔いの朝", "停電", "旅行", "お泊まり", "引っ越し", "大掃除", "喧嘩のあと", "大切な日の前夜", "何でもない一日", "世界が終わる日", "最後の日", "そのあとの日"];
+const conditions = ["ふたりきり", "隣同士", "背中合わせ", "向かい合わせ", "離ればなれ", "すれ違い", "久しぶり", "いつも通り", "一緒に暮らしている", "離れて暮らしている", "喧嘩中", "仲直りしたばかり", "気まずい", "無言", "話が止まらない", "素直になれない", "言葉が足りない", "言いすぎた", "何も言えない", "言わなくてもわかる", "待っている", "待たせている", "追いかける", "追いかけられる", "探している", "見つけた", "見失った", "帰りたい", "帰したくない", "帰る場所がある", "会いたい", "会いたくない", "会えない", "会えた", "離れたい", "離れたくない", "触れたい", "触れられない", "近すぎる", "遠すぎる", "目が合う", "目を逸らす", "見つめている", "見られている", "背を向ける", "振り返る", "手を伸ばす", "手を離す", "手を繋ぐ", "肩を並べる", "片方だけ眠っている", "ふたりとも眠れない", "片方だけ酔っている", "ふたりとも酔っている", "片方だけ怒っている", "ふたりとも怒っている", "片方だけ笑っている", "ふたりとも笑っている", "泣いている", "泣けない", "疲れている", "怪我をしている", "熱がある", "腹が減っている", "寒がっている", "暑がっている", "眠そう", "機嫌が悪い", "機嫌がいい", "浮かれている", "隠し事がある", "嘘をついている", "勘違いしている", "何かを疑っている", "秘密を共有している", "約束を守っている", "約束を破った", "忘れている", "覚えている", "思い出している", "何かを決めた", "迷っている", "諦めかけている", "諦められない", "怖がっている", "安心している", "緊張している", "油断している", "嫉妬している", "心配している", "意地を張っている", "甘えている", "甘やかしている", "我慢している", "からかっている", "試している", "信じている", "信じられない", "同じことを考えている", "違うことを考えている"];
+const keywords = ["約束", "名前", "手", "指", "傷", "傷跡", "体温", "声", "匂い", "髪", "目", "背中", "肩", "唇", "心臓", "涙", "笑顔", "寝顔", "横顔", "足音", "手紙", "写真", "鍵", "指輪", "時計", "傘", "靴", "服", "マグカップ", "歯ブラシ", "枕", "毛布", "花", "本", "財布", "切符", "レシート", "メモ", "プレゼント", "忘れ物", "朝ごはん", "晩ごはん", "弁当", "コーヒー", "酒", "水", "甘いもの", "好物", "苦手なもの", "最後の一口", "雨", "雪", "月", "星", "太陽", "空", "雲", "海", "火", "風", "光", "影", "色", "音", "季節", "距離", "時間", "記憶", "夢", "過去", "未来", "秘密", "嘘", "本音", "言い訳", "勘違い", "後悔", "願い", "選択", "答え", "居場所", "帰る場所", "約束の場所", "ふるさと", "家", "道", "境界線", "半分", "お揃い", "片方", "初めて", "二度目", "最後", "永遠", "一瞬", "昔の話", "明日の話", "くだらない話", "言えなかったこと", "愛"];
+const $ = id => document.getElementById(id);
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+function currentText(){
+  const pageUrl = window.location.origin + window.location.pathname;
+  return `━━━ ∙ʚ NARUSASUお題ガチャɞ∙ ━━━
+
+『 ${$("scene").textContent} × ${$("condition").textContent} × ${$("keyword").textContent} 』
+
+#ナルサスお題ガチャ #ナルサス
+
+引いてみる：${pageUrl}
+
+━━━━━━━ ∙ʚ🍥🍅ɞ∙ ━━━━━━━`;
+}
+function updateShare(){
+  const text = currentText();
+  $("shareX").href = "https://twitter.com/intent/tweet?text="+encodeURIComponent(text);
+  $("shareBsky").href = "https://bsky.app/intent/compose?text="+encodeURIComponent(text);
+}
+function spin(){
+  [["scene",scenes],["condition",conditions],["keyword",keywords]].forEach(([id,a])=>{
+    const el=$(id); el.textContent=pick(a); el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash");
+  });
+  updateShare();
+}
+$("spin").addEventListener("click",spin);
+updateShare();
+</script>
+</body>
+</html>
