@@ -1,4 +1,9 @@
-# CUSTOM YOUR NARUSASU — Production v4
+## PUBLIC URLS
+
+- [特設サイト TOP](https://cyns2027.github.io/custom-your-narusasu/)
+- [NARUSASU お題ガチャ](https://cyns2027.github.io/custom-your-narusasu/gacha/)
+-
+- # CUSTOM YOUR NARUSASU — Production v4
 
 v3.5を実ファイル基準とし、ユーザー共有のv3.5.1〜v3.5.3差分を再現したうえで、本番運用構造へ移行した版です。
 
