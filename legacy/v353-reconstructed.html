@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CUSTOM YOUR NARUSASU — Information Gacha Demo v3.5.3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&family=Oxanium:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white:#ffffff;
+  --ink:#090909;
+  --gray:#55565a;
+  --muted:#81838a;
+  --line:#c9ccd2;
+  --line-soft:#e8e9ec;
+  --orange:#f69500;
+  --blue:#012a91;
+  --yellow:#ffdc00;
+  --silver:#b8bec7;
+  --silver-light:#eef1f4;
+  --silver-dark:#59616b;
+  --clear:rgba(255,255,255,.34);
+}
+*{box-sizing:border-box}
+html{background:var(--yellow)}
+body{
+  margin:0;
+  min-height:100svh;
+  background:var(--white);
+  color:var(--ink);
+  font-family:"Noto Sans JP","Source Han Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-weight:900;
+  overflow-x:hidden;
+}
+body::before{
+  content:"";
+  position:fixed;
+  top:0;left:0;right:0;
+  height:5px;
+  background:var(--yellow);
+  z-index:20;
+}
+button{font:inherit}
+
+/* Opening wipe: shown on every load */
+.intro{
+  position:fixed;
+  inset:0;
+  z-index:999;
+  background:var(--yellow);
+  overflow:hidden;
+  pointer-events:none;
+}
+.intro__white{
+  position:absolute;
+  inset:0;
+  background:var(--white);
+  transform:translateX(-100%);
+}
+.intro.is-running .intro__white{
+  animation:introWipe .44s cubic-bezier(.76,0,.24,1) forwards;
+}
+.intro.is-done{display:none}
+@keyframes introWipe{to{transform:translateX(0)}}
+
+.site{
+  width:min(100%,760px);
+  margin:0 auto;
+  padding:54px 34px 34px;
+}
+.kicker{
+  text-align:center;
+  font-size:12px;
+  letter-spacing:.24em;
+  line-height:1.4;
+  margin:0 0 22px;
+  color:#151515;
+}
+.logo-wrap{position:relative}
+.logo{
+  font-family:"Oxanium","Arial Black",sans-serif;
+  font-weight:800;
+  text-transform:uppercase;
+  font-size:clamp(35px,7vw,61px);
+  letter-spacing:-.055em;
+  line-height:.95;
+  margin:0;
+  white-space:nowrap;
+  transform-origin:left center;
+}
+.logo .n{color:var(--orange)}
+.logo .s{color:var(--blue)}
+.logo.logo-b .custom-your{
+  display:inline-block;
+  font-size:.78em;
+  letter-spacing:-.035em;
+  transform:translateY(-.03em);
+}
+.logo.logo-b .narusasu{
+  display:inline-block;
+  font-size:1.08em;
+}
+.tagline{
+  margin:9px 0 0;
+  text-align:center;
+  font-size:clamp(14px,2.8vw,19px);
+  line-height:1.55;
+  color:#55565a;
+  letter-spacing:.005em;
+}
+
+.next{
+  text-align:center;
+  margin:62px 0 10px;
+  color:#56575b;
+}
+.next__label{
+  font-size:clamp(13px,2.8vw,17px);
+  letter-spacing:.015em;
+  margin:0 0 18px;
+}
+.next__date{
+  font-size:clamp(14px,3.1vw,18px);
+  margin:0;
+}
+
+.machine-zone{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:24px;
+}
+.machine{
+  position:relative;
+  width:min(54vw,282px);
+  aspect-ratio:.64;
+  filter:drop-shadow(0 18px 18px rgba(23,31,42,.08));
+  user-select:none;
+}
+/* clear upper chamber */
+.chamber{
+  position:absolute;
+  left:8%;right:8%;top:0;height:52%;
+  border:2px solid rgba(151,160,171,.78);
+  border-bottom:none;
+  border-radius:48% 48% 11% 11% / 28% 28% 9% 9%;
+  background:
+    linear-gradient(104deg,rgba(255,255,255,.84) 0 13%,rgba(255,255,255,.18) 30%,rgba(210,220,230,.10) 65%,rgba(255,255,255,.68) 100%);
+  box-shadow:
+    inset 0 0 0 4px rgba(255,255,255,.28),
+    inset 0 -18px 24px rgba(91,110,128,.04);
+  overflow:hidden;
+  z-index:2;
+}
+.chamber::after{
+  content:"";
+  position:absolute;
+  left:7%;top:8%;width:20%;height:62%;
+  border-radius:50%;
+  background:linear-gradient(90deg,rgba(255,255,255,.42),rgba(255,255,255,0));
+  transform:rotate(10deg);
+}
+.chamber-label{
+  position:absolute;
+  z-index:4;
+  left:0;right:0;top:9%;
+  text-align:center;
+  font-size:8px;
+  letter-spacing:.13em;
+  color:rgba(174,182,192,.74);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.85),
+    0 -1px 0 rgba(120,130,140,.14);
+  mix-blend-mode:multiply;
+}
+.capsule{
+  position:absolute;
+  width:58px;height:58px;
+  border-radius:50%;
+  border:1.6px solid rgba(82,93,105,.62);
+  overflow:hidden;
+  box-shadow:
+    inset 0 7px 8px rgba(255,255,255,.35),
+    inset 0 -7px 9px rgba(44,55,66,.13),
+    0 3px 4px rgba(47,55,65,.05);
+  z-index:3;
+}
+.capsule::before{
+  content:"";
+  position:absolute;left:-2px;right:-2px;top:49%;height:1.5px;
+  background:rgba(74,82,91,.55);
+}
+.capsule::after{
+  content:"";
+  position:absolute;left:9px;top:6px;width:15px;height:8px;
+  border-radius:50%;background:rgba(255,255,255,.45);filter:blur(.4px);
+}
+.c-orange{background:linear-gradient(#ffc98b 0 49%,#ed6c00 51% 100%)}
+.c-blue{background:linear-gradient(#9bb9ff 0 49%,#1f56c9 51% 100%)}
+.c-yellow{background:linear-gradient(#fff0a3 0 49%,#ffdc00 51% 100%)}
+.c-clear{background:linear-gradient(rgba(255,255,255,.92) 0 49%,rgba(206,214,224,.62) 51% 100%)}
+.c1{left:7%;top:20%;transform:rotate(-8deg)}
+.c2{left:26%;top:24%;transform:rotate(8deg)}
+.c3{left:48%;top:19%;transform:rotate(-12deg)}
+.c4{left:66%;top:24%;transform:rotate(12deg)}
+.c5{left:13%;top:43%;transform:rotate(5deg)}
+.c6{left:35%;top:41%;transform:rotate(-3deg)}
+.c7{left:56%;top:42%;transform:rotate(10deg)}
+.c8{left:74%;top:43%;transform:rotate(-8deg)}
+.c9{left:31%;top:57%;transform:rotate(6deg)}
+
+/* rigid lower body */
+.machine-body{
+  position:absolute;
+  left:10%;right:10%;top:43%;height:47%;
+  border:1.8px solid #aeb5bf;
+  border-radius:12px 12px 21px 21px;
+  background:linear-gradient(180deg,#fbfcfd 0%,#eef2f5 58%,#dfe4e9 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    inset 8px 0 16px rgba(170,180,190,.06),
+    inset -8px 0 16px rgba(170,180,190,.08);
+  z-index:1;
+}
+.machine-body::before{
+  content:"";
+  position:absolute;
+  left:7%;right:7%;top:4%;height:1px;
+  background:rgba(116,126,138,.28);
+}
+.operation-plate{
+  position:absolute;
+  z-index:5;
+  width:34%;aspect-ratio:1;
+  left:50%;top:64%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1.8px solid #9da5af;
+  background:radial-gradient(circle at 32% 27%,#fff 0 6%,#edf0f3 21%,#cbd1d8 54%,#abb3bd 78%,#9099a4 100%);
+  box-shadow:
+    inset 0 3px 5px rgba(255,255,255,.72),
+    inset 0 -5px 9px rgba(69,80,91,.13),
+    0 6px 10px rgba(40,48,58,.06);
+}
+.coin-slot{
+  position:absolute;
+  top:17%;left:50%;
+  width:28%;height:7%;
+  transform:translateX(-50%);
+  border-radius:99px;
+  background:linear-gradient(#343b43,#59626c);
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.4),0 1px 0 #fff;
+}
+.handle-axis{
+  position:absolute;
+  left:50%;top:54%;
+  width:13%;height:42%;
+  transform:translate(-50%,-50%);
+  border-radius:99px;
+  background:linear-gradient(90deg,#747e89,#c2c9d0 48%,#6d7783);
+  border:1px solid #76808c;
+  box-shadow:inset 2px 0 3px rgba(255,255,255,.45);
+  transform-origin:50% 50%;
+  transition:transform .7s cubic-bezier(.2,.9,.2,1.15);
+}
+.handle-axis.turn{transform:translate(-50%,-50%) rotate(180deg)}
+
+.delivery-slot{
+  position:absolute;
+  z-index:6;
+  left:50%;bottom:9%;
+  width:50%;height:15%;
+  transform:translateX(-50%);
+  border-radius:8px 8px 12px 12px;
+  border:1.6px solid #6e7781;
+  background:linear-gradient(#737e8a 0%,#2e3740 38%,#222a31 100%);
+  box-shadow:inset 0 4px 7px rgba(0,0,0,.3),0 1px 0 rgba(255,255,255,.8);
+}
+.delivery-slot::after{
+  content:"";
+  position:absolute;
+  left:11%;right:11%;bottom:-8px;height:8px;
+  background:linear-gradient(#a7b0ba,#e0e5e9);
+  border:1px solid #9ea7b1;
+  border-top:none;
+  border-radius:0 0 5px 5px;
+}
+.foot{
+  position:absolute;
+  z-index:0;
+  left:22%;right:22%;bottom:2%;height:10%;
+  border-radius:7px 7px 10px 10px;
+  border:1.6px solid #aeb5bf;
+  background:linear-gradient(#f7f8fa,#dbe0e5);
+}
+.drop-ball{
+  position:absolute;
+  z-index:10;
+  left:50%;top:68%;
+  width:57px;height:57px;
+  transform:translate(-50%,-50%) scale(.2);
+  border-radius:50%;
+  opacity:0;
+  border:1.6px solid rgba(80,89,99,.72);
+  background:linear-gradient(#f69500 0 49%,#012a91 51% 100%);
+  box-shadow:inset 0 7px 8px rgba(255,255,255,.34),inset 0 -7px 9px rgba(44,55,66,.13),0 7px 10px rgba(34,41,49,.12);
+  pointer-events:none;
+}
+.drop-ball::before{
+  content:"";
+  position:absolute;left:-1px;right:-1px;top:49%;height:1.5px;background:rgba(70,78,88,.58);
+}
+.drop-ball.drop{animation:dropBall .9s cubic-bezier(.21,.72,.31,1.06) forwards}
+@keyframes dropBall{
+  0%{top:61%;opacity:0;transform:translate(-50%,-50%) scale(.18) rotate(-18deg)}
+  30%{opacity:1}
+  72%{top:92%;transform:translate(-50%,-50%) scale(1) rotate(11deg)}
+  86%{top:88%;transform:translate(-50%,-50%) scale(.96) rotate(-5deg)}
+  100%{top:91%;opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}
+}
+.turn-button{
+  margin-top:18px;
+  min-width:220px;
+  border:0;
+  border-radius:999px;
+  background:var(--yellow);
+  color:#111;
+  padding:11px 28px 12px;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:none;
+  transition:transform .12s ease,filter .12s ease;
+}
+.turn-button:hover{filter:brightness(.98)}
+.turn-button:active{transform:translateY(1px)}
+.machine-status{
+  min-height:18px;
+  margin-top:10px;
+  color:#6b6d72;
+  font-size:9px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+}
+
+.release{
+  margin-top:34px;
+}
+.release-title{
+  margin:0 0 12px;
+  color:#55565a;
+  font-size:15px;
+  letter-spacing:.01em;
+}
+.release-row{
+  width:100%;
+  display:grid;
+  grid-template-columns:30px minmax(0,1fr) auto;
+  align-items:start;
+  gap:9px;
+  padding:7px 0 12px;
+  border:0;
+  border-bottom:2px dotted #6f7074;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.release-row + .release-row{margin-top:8px}
+.release-num{
+  padding-top:1px;
+  font-size:12px;
+  color:#1c1c1d;
+  letter-spacing:.08em;
+}
+.release-main{min-width:0}
+.release-head{
+  font-size:14px;
+  line-height:1.35;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.release-date{color:#222}
+.release-name{color:#333}
+.release-sub{
+  margin-top:3px;
+  font-size:12px;
+  line-height:1.45;
+  color:#8a8b90;
+  font-weight:700;
+}
+.release-open{
+  align-self:center;
+  font-size:14px;
+  color:#4f5054;
+  letter-spacing:.02em;
+}
+.release-row.future{
+  opacity:.36;
+  cursor:default;
+}
+.release-row.future .release-name,
+.release-row.future .release-sub{display:none}
+.release-row.future .release-head{
+  gap:0;
+}
+.release-row.future .release-date{
+  font-size:14px;
+}
+.release-row.future .release-open{font-size:10px;letter-spacing:.08em}
+
+.footer{
+  margin-top:58px;
+  padding:18px 0 8px;
+  text-align:center;
+  font-family:"Oxanium","Arial Black",sans-serif;
+  font-size:12px;
+  letter-spacing:.005em;
+  color:#242424;
+}
+.footer span{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:7px;
+  color:#4f535b;
+  display:block;
+  margin-top:3px;
+  letter-spacing:.12em;
+  font-weight:900;
+}
+.footer .footer-disclaimer{
+  font-family:"Noto Sans JP",sans-serif;
+  font-size:6px;
+  line-height:1.6;
+  color:#777;
+  display:block;
+  margin-top:14px;
+  letter-spacing:.03em;
+}
+
+/* Modal */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  place-items:center;
+  padding:22px;
+  background:rgba(13,16,20,.36);
+  backdrop-filter:blur(7px);
+}
+.modal-overlay.show{display:grid}
+.modal{
+  width:min(100%,570px);
+  max-height:min(82svh,760px);
+  overflow:auto;
+  background:#fff;
+  border:1px solid #d5d8dd;
+  border-radius:3px;
+  padding:28px;
+  box-shadow:0 24px 70px rgba(0,0,0,.16);
+  animation:modalIn .2s ease-out;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.modal-top{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:28px}
+.modal-kicker{font-size:8px;letter-spacing:.18em;color:#777}
+.modal-x{
+  width:28px;height:28px;border:1px solid #d7d9dd;background:#fff;color:#222;cursor:pointer;border-radius:50%;font-size:15px;line-height:1;
+}
+.modal h2{margin:0;font-size:24px;line-height:1.18;letter-spacing:-.02em}
+.modal p{margin:16px 0 0;font-size:12px;line-height:1.9;color:#5e6065;font-weight:700}
+.modal-card{
+  margin-top:22px;
+  padding:26px 20px;
+  background:#fafafa;
+  border:1px solid #e3e4e7;
+  text-align:center;
+}
+.modal-card strong{display:block;font-size:22px;line-height:1.25}
+.modal-card small{display:block;margin-top:8px;font-size:8px;letter-spacing:.12em;color:#7e8085}
+.modal-action{
+  width:100%;margin-top:20px;border:0;background:#111;color:#fff;padding:13px 18px;cursor:pointer;font-size:11px;font-weight:900;
+}
+
+@media (max-width:640px){
+  .site{padding:44px 18px 26px}
+  .kicker{font-size:9px;margin-bottom:18px}
+  .logo{font-size:clamp(27px,7.9vw,48px)}
+  .tagline{margin-top:23px;font-size:12px}
+  .next{margin-top:52px}
+  .next__label{font-size:12px;margin-bottom:14px}
+  .next__date{font-size:12px}
+  .machine{width:min(60vw,248px)}
+  .capsule{width:48px;height:48px}
+  .operation-plate{width:35%;top:64.5%}
+  .release{margin-top:30px}
+  .modal{padding:22px 18px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div class="intro" id="intro" aria-hidden="true"><div class="intro__white"></div></div>
+
+<main class="site" id="site">
+  <p class="kicker">2027 NARUTO × SASUKE ONLY</p>
+
+  <div class="logo-wrap">
+    <h1 class="logo logo-a" id="mainLogo" aria-label="CUSTOM YOUR NARUSASU">
+      <span class="custom-your">CUSTOM YOUR </span><span class="narusasu"><span class="n">N</span>ARU<span class="s">S</span>ASU</span>
+    </h1>
+  </div>
+
+  <p class="tagline">好きなナルサスを、好きなかたちで、好きなだけ！</p>
+
+  <section class="next" aria-label="Next information release">
+    <p class="next__label">NEXT INFORMATION</p>
+    <p class="next__date">2026.12.24</p>
+  </section>
+
+  <section class="machine-zone" aria-label="Information gacha">
+    <div class="machine" id="machine">
+      <div class="chamber">
+        <div class="chamber-label">NARUSASU CUSTOM GACHA</div>
+        <div class="capsule c-yellow c1"></div>
+        <div class="capsule c-blue c2"></div>
+        <div class="capsule c-clear c3"></div>
+        <div class="capsule c-orange c4"></div>
+        <div class="capsule c-orange c5"></div>
+        <div class="capsule c-blue c6"></div>
+        <div class="capsule c-yellow c7"></div>
+        <div class="capsule c-clear c8"></div>
+        <div class="capsule c-blue c9"></div>
+      </div>
+      <div class="machine-body"></div>
+      <div class="operation-plate">
+        <div class="coin-slot"></div>
+        <div class="handle-axis" id="handle"></div>
+      </div>
+      <div class="delivery-slot"></div>
+      <div class="foot"></div>
+      <div class="drop-ball" id="dropBall"></div>
+    </div>
+
+    <button class="turn-button" id="turnButton">ハンドルをまわす</button>
+    <div class="machine-status" id="machineStatus">CAPSULE READY</div>
+  </section>
+
+  <section class="release" aria-label="Released and next information">
+  <h2 class="release-title">>> RELEASED / NEXT</h2>
+
+  <button class="release-row" data-modal="gift">
+    <span class="release-num">01</span>
+    <span class="release-main">
+      <span class="release-head"><span class="release-date">2026.12.24</span><span class="release-name">CHRISTMAS GIFT</span></span>
+      <span class="release-sub">NARUSASU お題ガチャ OPEN</span>
+    </span>
+    <span class="release-open">OPEN</span>
+  </button>
+
+  <button class="release-row future" type="button" aria-disabled="true" tabindex="-1">
+    <span class="release-num">02</span>
+    <span class="release-main">
+      <span class="release-head"><span class="release-date">2027.05</span><span class="release-name">ANTHOLOGY</span></span>
+      <span class="release-sub">『そのあと、ふたりで。』 / 執筆者 × テーマ</span>
+    </span>
+    <span class="release-open">NEXT</span>
+  </button>
+
+  <button class="release-row future" type="button" aria-disabled="true" tabindex="-1">
+    <span class="release-num">03</span>
+    <span class="release-main">
+      <span class="release-head"><span class="release-date">2027.06</span><span class="release-name">EVENT PROJECTS</span></span>
+      <span class="release-sub">カスタムミニバインダー / 会場ガチャガチャ</span>
+    </span>
+    <span class="release-open">NEXT</span>
+  </button>
+
+  <button class="release-row future" type="button" aria-disabled="true" tabindex="-1">
+    <span class="release-num">04</span>
+    <span class="release-main">
+      <span class="release-head"><span class="release-date">2027.07</span><span class="release-name">LINEUP</span></span>
+      <span class="release-sub">お品書き / アンソロ単品 / CUSTOM SET</span>
+    </span>
+    <span class="release-open">NEXT</span>
+  </button>
+</section>
+
+<footer class="footer">CUSTOM YOUR NARUSASU<span>2027 NARUTO × SASUKE ONLY</span><span class="footer-disclaimer">本企画は個人による非公式ファン企画です。<br>原作者・出版社・その他公式関係各社とは一切関係ありません。</span></footer>
+</main>
+
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <section class="modal">
+    <div class="modal-top">
+      <div class="modal-kicker">RELEASED INFORMATION</div>
+      <button class="modal-x" id="modalClose" aria-label="閉じる">×</button>
+    </div>
+    <h2 id="modalTitle">2027 NARUSASU ONLY<br>からのプレゼント</h2>
+    <div class="modal-card">
+      <strong>NARUSASU<br>お題ガチャ OPEN</strong>
+      <small>SCENE × CONDITION × KEYWORD</small>
+    </div>
+    <p>好きなお題が出るまで、何度でもどうぞ。<br>本番ではここからお題ガチャページへ移動する想定です。</p>
+    <button class="modal-action" id="modalAction">お題ガチャを見る</button>
+  </section>
+</div>
+
+<script>
+const intro = document.getElementById('intro');
+requestAnimationFrame(() => {
+  setTimeout(() => intro.classList.add('is-running'), 70);
+  setTimeout(() => intro.classList.add('is-done'), 565);
+});
+
+const handle = document.getElementById('handle');
+const dropBall = document.getElementById('dropBall');
+const turnButton = document.getElementById('turnButton');
+const statusEl = document.getElementById('machineStatus');
+const modal = document.getElementById('modalOverlay');
+let running = false;
+
+function isOpened(){return localStorage.getItem('cyn-demo-v35-20261224') === '1'}
+function syncStatus(){
+  if(isOpened()){
+    statusEl.textContent = '';
+    turnButton.textContent = 'もう一度まわす';
+  }else{
+    statusEl.textContent = 'CAPSULE READY';
+    turnButton.textContent = 'ハンドルをまわす';
+  }
+}
+function openModal(){modal.classList.add('show')}
+function closeModal(){modal.classList.remove('show')}
+function playGacha(){
+  if(running) return;
+  running = true;
+  handle.classList.remove('turn');
+  dropBall.classList.remove('drop');
+  void handle.offsetWidth;
+  handle.classList.add('turn');
+  setTimeout(() => { dropBall.classList.add('drop'); }, 460);
+  setTimeout(() => {
+    localStorage.setItem('cyn-demo-v35-20261224','1');
+    syncStatus();
+    openModal();
+    running = false;
+  }, 1320);
+}
+turnButton.addEventListener('click', playGacha);
+document.querySelector('[data-modal="gift"]').addEventListener('click', openModal);
+document.getElementById('modalClose').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if(e.target === modal) closeModal() });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal() });
+document.getElementById('modalAction').addEventListener('click', () => alert('本番では NARUSASU お題ガチャへ遷移します。'));
+
+syncStatus();
+</script>
+</body>
+</html>
