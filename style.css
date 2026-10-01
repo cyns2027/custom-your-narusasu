@@ -24,9 +24,13 @@ body{
   overflow-x:hidden;
   line-break:strict;
 }
-body::before{content:"";position:fixed;top:0;left:0;right:0;height:5px;background:var(--yellow);z-index:20}
-button{font:inherit}
-a{color:inherit}
+body{
+  border-top:5px solid var(--yellow);
+}
+
+body::before{
+  display:none;
+}
 
 /* v3.5.3 opening timing is intentionally preserved. */
 .intro{position:fixed;inset:0;z-index:999;background:var(--yellow);overflow:hidden;pointer-events:none}
