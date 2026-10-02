@@ -21,8 +21,14 @@
   --blue:#012a91;
   --white:#fff;
 }
+
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;background:#fff}
+
+html{
+  scroll-behavior:smooth;
+  background:#fff;
+}
+
 body{
   margin:0;
   color:var(--ink);
@@ -34,13 +40,16 @@ body{
   word-break:normal;
   overflow-wrap:anywhere;
 }
+
 a{color:inherit}
 button{font:inherit}
+
 .page{
   width:min(100%,980px);
   margin:0 auto;
   padding:28px 28px 84px;
 }
+
 .topbar{
   display:flex;
   justify-content:space-between;
@@ -50,7 +59,9 @@ button{font:inherit}
   font-size:11px;
   letter-spacing:.11em;
 }
+
 .brand{white-space:nowrap}
+
 .invite-label{
   display:inline-flex;
   align-items:center;
@@ -60,15 +71,18 @@ button{font:inherit}
   font-size:9px;
   letter-spacing:.12em;
 }
+
 .hero{
   padding:46px 0 56px;
   text-align:center;
 }
+
 .eyebrow{
   margin:0 0 10px;
   font-size:clamp(12px,1.7vw,16px);
   letter-spacing:.06em;
 }
+
 .title{
   margin:0;
   text-wrap:balance;
@@ -77,8 +91,10 @@ button{font:inherit}
   line-height:1.15;
   letter-spacing:-.04em;
 }
+
 .title .dot-orange{color:var(--orange)}
 .title .dot-blue{color:var(--blue)}
+
 .lead{
   width:min(100%,680px);
   text-wrap:pretty;
@@ -86,6 +102,7 @@ button{font:inherit}
   font-size:clamp(14px,2vw,18px);
   line-height:2;
 }
+
 .kv{
   position:relative;
   width:min(100%,820px);
@@ -99,19 +116,17 @@ button{font:inherit}
   place-items:center;
   overflow:hidden;
 }
-.kv::before{
-  content:"KEY VISUAL";
-  font-size:clamp(18px,4vw,36px);
-  letter-spacing:.12em;
-}
+
+.kv::before,
 .kv::after{
-  content:"松浦さんのKVをここに";
-  position:absolute;
-  bottom:16px;
-  left:0;right:0;
-  color:var(--muted);
-  font-size:9px;
-  letter-spacing:.08em;
+  display:none;
+}
+
+.kv-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 .quick{
@@ -122,48 +137,58 @@ button{font:inherit}
   background:var(--line);
   border:1px solid var(--line);
 }
+
 .quick-item{
   background:#fff;
   padding:18px 16px 20px;
 }
+
 .quick-label{
   color:var(--muted);
   font-size:9px;
   letter-spacing:.12em;
   margin-bottom:4px;
 }
+
 .quick-value{
   font-size:15px;
   line-height:1.55;
 }
+
 .section{
   margin:0 0 72px;
 }
+
 .section-head{
   display:flex;
   align-items:center;
   gap:12px;
   margin-bottom:28px;
 }
+
 .section-num{
   display:inline-grid;
   place-items:center;
-  width:34px;height:34px;
+  width:34px;
+  height:34px;
   background:var(--blue);
   color:var(--yellow);
   font-size:12px;
 }
+
 .section-title{
   margin:0;
   text-wrap:balance;
   font-size:clamp(22px,3.2vw,32px);
   letter-spacing:-.02em;
 }
+
 .section-copy{
   font-size:14px;
   text-wrap:pretty;
   line-height:2.05;
 }
+
 .after-list{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
@@ -173,11 +198,13 @@ button{font:inherit}
   padding:0;
   list-style:none;
 }
+
 .after-list li{
   padding:8px 0;
   border-bottom:1px dotted #aaa;
   font-size:15px;
 }
+
 .callout{
   margin-top:30px;
   padding:22px 24px;
@@ -185,37 +212,44 @@ button{font:inherit}
   background:var(--soft);
   font-size:14px;
 }
+
 .format-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
   gap:14px;
 }
+
 .format-card{
   border:1px solid var(--ink);
   padding:20px;
   min-height:155px;
 }
+
 .format-card h3{
   margin:0 0 10px;
   font-size:17px;
 }
+
 .format-card p{
   margin:0;
   color:#444;
   font-size:12px;
   line-height:1.85;
 }
+
 .book{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:38px;
   align-items:start;
 }
+
 .book-visual-wrap{
   justify-self:center;
   width:min(100%,300px);
   text-align:center;
 }
+
 .book-visual{
   position:relative;
   aspect-ratio:112/176;
@@ -231,18 +265,18 @@ button{font:inherit}
     linear-gradient(135deg,rgba(249,255,87,.16),rgba(1,42,145,.03)),
     #fafafa;
 }
+
 .book-visual::before{
-  content:"COVER ILLUSTRATION";
-  color:#777;
-  font-size:12px;
-  letter-spacing:.08em;
+  display:none;
 }
+
 .book-cover-img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
 }
+
 .book-size-label{
   display:inline-flex;
   align-items:center;
@@ -255,6 +289,7 @@ button{font:inherit}
   line-height:1.4;
   text-align:center;
 }
+
 .book-credit{
   margin-top:12px;
   font-size:10px;
@@ -262,11 +297,13 @@ button{font:inherit}
   color:var(--muted);
   text-align:center;
 }
+
 .specs{
   display:grid;
   gap:0;
   border-top:1px solid var(--line);
 }
+
 .spec-row{
   display:grid;
   grid-template-columns:140px 1fr;
@@ -275,91 +312,111 @@ button{font:inherit}
   border-bottom:1px solid var(--line);
   font-size:12px;
 }
+
 .spec-key{color:var(--muted)}
+
 .support{
   display:grid;
   grid-template-columns:1.15fr .85fr;
   gap:18px;
 }
+
 .support-card{
   padding:26px;
   background:var(--soft);
 }
+
 .support-card.yellow{
   background:var(--yellow);
 }
+
 .support-card h3{
   margin:0 0 12px;
   font-size:18px;
 }
+
 .support-card p{
   margin:0;
   font-size:12px;
   line-height:1.95;
 }
+
 .gift{
   padding:34px;
   border:1px solid var(--yellow);
   text-align:center;
 }
+
 .gift-kicker{
   font-size:10px;
   color:var(--muted);
   letter-spacing:.12em;
 }
+
 .gift strong{
   display:block;
   margin-top:8px;
   font-size:clamp(20px,3vw,30px);
 }
+
 .contact{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:28px;
 }
+
 .contact-card{
   border-top:4px solid var(--blue);
   padding-top:18px;
 }
+
 .contact-card h3{
   margin:0 0 12px;
   font-size:16px;
 }
+
 .contact-card p{
   margin:0;
   font-size:12px;
   line-height:1.9;
 }
+
 .note{
   margin-top:22px;
   color:var(--muted);
   font-size:10px;
   line-height:1.9;
 }
+
 .contact-notes{
   margin-top:22px;
   color:var(--muted);
   font-size:10px;
   line-height:1.8;
 }
+
 .contact-notes p{
   margin:0 0 9px;
   font-size:inherit;
   line-height:inherit;
 }
+
 .contact-notes p:last-child{
   margin-bottom:0;
 }
+
 .footer{
   margin-top:84px;
   padding-top:22px;
   border-top:1px solid var(--line);
   text-align:center;
 }
+
 .footer-main{
   font-size:12px;
   letter-spacing:.04em;
 }
+
 .footer-sub{
   margin-top:3px;
   font-size:7px;
@@ -369,62 +426,98 @@ button{font:inherit}
 
 /* public conversion hooks */
 .public-only{display:none}
-body.public-mode .invite-only{display:none!important}
-body.public-mode .public-only{display:block}
 
-/* replace KV placeholder by putting an img.kv-img inside .kv */
-.kv-img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
+body.public-mode .invite-only{
+  display:none!important;
+}
+
+body.public-mode .public-only{
   display:block;
 }
 
 @media(max-width:720px){
-  .page{padding:18px 16px 56px}
+
+  .page{
+    padding:18px 16px 56px;
+  }
+
   .topbar{
     align-items:flex-start;
     gap:12px;
     padding-bottom:16px;
     font-size:9px;
   }
-  .invite-label{font-size:8px;padding:5px 8px}
 
-  .hero{padding:26px 0 34px}
+  .invite-label{
+    font-size:8px;
+    padding:5px 8px;
+  }
+
+  .hero{
+    padding:26px 0 34px;
+  }
+
   .eyebrow{
     font-size:10px;
     line-height:1.5;
     letter-spacing:.045em;
   }
+
   .title{
     font-size:clamp(24px,7.4vw,36px);
     line-height:1.22;
     letter-spacing:-.04em;
     white-space:nowrap;
   }
+
   .lead{
     margin-top:18px;
     font-size:12px;
     line-height:1.9;
   }
-  .kv{margin-top:26px}
-  .kv::after{font-size:8px;bottom:10px}
+
+  .kv{
+    margin-top:26px;
+  }
 
   .quick{
     grid-template-columns:1fr 1fr;
     margin-bottom:48px;
   }
-  .quick-item{padding:14px 12px 16px}
-  .quick-label{font-size:8px}
-  .quick-value{font-size:12px;line-height:1.55}
 
-  .section{margin-bottom:50px}
-  .section-head{gap:10px;margin-bottom:20px}
-  .section-num{width:30px;height:30px;font-size:10px}
+  .quick-item{
+    padding:14px 12px 16px;
+  }
+
+  .quick-label{
+    font-size:8px;
+  }
+
+  .quick-value{
+    font-size:12px;
+    line-height:1.55;
+  }
+
+  .section{
+    margin-bottom:50px;
+  }
+
+  .section-head{
+    gap:10px;
+    margin-bottom:20px;
+  }
+
+  .section-num{
+    width:30px;
+    height:30px;
+    font-size:10px;
+  }
+
   .section-title{
     font-size:20px;
     line-height:1.25;
   }
+
   .section-copy{
     font-size:12px;
     line-height:1.95;
@@ -435,10 +528,12 @@ body.public-mode .public-only{display:block}
     gap:4px;
     margin:20px auto;
   }
+
   .after-list li{
     padding:6px 0;
     font-size:12px;
   }
+
   .callout{
     margin-top:22px;
     padding:18px 18px;
@@ -446,20 +541,50 @@ body.public-mode .public-only{display:block}
     line-height:1.9;
   }
 
-  .format-grid{grid-template-columns:1fr}
+  .format-grid{
+    grid-template-columns:1fr;
+  }
+
   .format-card{
     padding:17px;
     min-height:auto;
   }
-  .format-card h3{font-size:15px}
-  .format-card p{font-size:11px;line-height:1.85}
 
-  .book,.support,.contact{grid-template-columns:1fr}
-  .book{gap:28px}
-  .book-visual-wrap{width:min(82vw,250px)}
-  .book-visual{width:min(76vw,230px)}
-  .book-size-label{font-size:10px;margin-top:18px}
-  .book-credit{font-size:9px}
+  .format-card h3{
+    font-size:15px;
+  }
+
+  .format-card p{
+    font-size:11px;
+    line-height:1.85;
+  }
+
+  .book,
+  .support,
+  .contact{
+    grid-template-columns:1fr;
+  }
+
+  .book{
+    gap:28px;
+  }
+
+  .book-visual-wrap{
+    width:min(82vw,250px);
+  }
+
+  .book-visual{
+    width:min(76vw,230px);
+  }
+
+  .book-size-label{
+    font-size:10px;
+    margin-top:18px;
+  }
+
+  .book-credit{
+    font-size:9px;
+  }
 
   .spec-row{
     grid-template-columns:92px 1fr;
@@ -468,26 +593,58 @@ body.public-mode .public-only{display:block}
     font-size:11px;
   }
 
-  .support-card{padding:20px}
-  .support-card h3{font-size:16px}
-  .support-card p{font-size:11px;line-height:1.9}
+  .support-card{
+    padding:20px;
+  }
 
-  .gift{padding:26px 18px}
-  .gift-kicker{font-size:8px}
-  .gift strong{font-size:19px}
+  .support-card h3{
+    font-size:16px;
+  }
 
-  .contact{gap:20px}
-  .contact-card h3{font-size:14px}
-  .contact-card p{font-size:11px}
-  .note,.contact-notes{font-size:9px}
+  .support-card p{
+    font-size:11px;
+    line-height:1.9;
+  }
 
-  .footer{margin-top:64px}
+  .gift{
+    padding:26px 18px;
+  }
+
+  .gift-kicker{
+    font-size:8px;
+  }
+
+  .gift strong{
+    font-size:19px;
+  }
+
+  .contact{
+    gap:20px;
+  }
+
+  .contact-card h3{
+    font-size:14px;
+  }
+
+  .contact-card p{
+    font-size:11px;
+  }
+
+  .note,
+  .contact-notes{
+    font-size:9px;
+  }
+
+  .footer{
+    margin-top:64px;
+  }
 }
 </style>
 </head>
 
 <body>
 <main class="page">
+
   <header class="topbar">
     <div class="brand"></div>
     <div class="invite-label invite-only">INVITATION ONLY</div>
@@ -495,62 +652,98 @@ body.public-mode .public-only{display:block}
   </header>
 
   <section class="hero">
+
     <p class="eyebrow">NARUTO × SASUKE ANTHOLOGY 2027</p>
-    <h1 class="title">『そのあと<span class="dot-orange">、</span>ふたりで<span class="dot-blue">。</span>』</h1>
+
+    <h1 class="title">
+      『そのあと<span class="dot-orange">、</span>ふたりで<span class="dot-blue">。</span>』
+    </h1>
+
     <p class="lead">
       何かの“あと”の、ナルトとサスケ。<br>
       それぞれの「そのあと、ふたりで。」を<br>
       自由にかたちにする、全年齢作品アンソロジーです。
     </p>
 
-    <div class="kv" aria-label="Key visual placeholder">
-      <!-- KV完成後:
-      <img class="kv-img" src="assets/keyvisual.jpg" alt="『そのあと、ふたりで。』キービジュアル">
-      -->
+    <div class="kv">
+      <img
+        class="kv-img"
+        src="assets/KV_CYNS2027.jpeg"
+        alt="CUSTOM YOUR NARUSASU キービジュアル"
+      >
     </div>
-    <p class="note" style="text-align:right;margin-top:10px">COVER ILLUST：松浦</p>
+
+    <p class="note" style="text-align:right;margin-top:10px">
+      COVER ILLUST：松浦
+    </p>
+
   </section>
 
   <section class="quick">
+
     <div class="quick-item">
       <div class="quick-label">RELEASE</div>
       <div class="quick-value">2027.07.18</div>
     </div>
+
     <div class="quick-item">
       <div class="quick-label">EVENT</div>
-      <div class="quick-value">星に願いを。day2<br>ほうき星が尾を引けば</div>
+      <div class="quick-value">
+        星に願いを。day2<br>
+        ほうき星が尾を引けば
+      </div>
     </div>
+
     <div class="quick-item">
       <div class="quick-label">BOOK SIZE</div>
-      <div class="quick-value">112 × 176 mm<br>少年コミック判</div>
+      <div class="quick-value">
+        112 × 176 mm<br>
+        少年コミック判
+      </div>
     </div>
+
     <div class="quick-item">
       <div class="quick-label">DEADLINE</div>
-      <div class="quick-value">2027.04.30<br>23:59</div>
+      <div class="quick-value">
+        2027.04.30<br>
+        23:59
+      </div>
     </div>
+
   </section>
 
   <section class="section" style="margin-bottom:54px">
+
     <div class="section-head">
       <span class="section-num">00</span>
       <h2 class="section-title">DISTRIBUTION</h2>
     </div>
+
     <div class="section-copy">
       <p>
         <strong>頒布予定：</strong><br>
-        2027年ナルサスオンリー／その他国内イベント／<span style="white-space:nowrap">国内通販／</span><br>
+        2027年ナルサスオンリー／その他国内イベント／
+        <span style="white-space:nowrap">国内通販／</span><br>
         中国でのイベント頒布（検討中）
       </p>
     </div>
+
   </section>
 
   <section class="section">
+
     <div class="section-head">
       <span class="section-num">01</span>
       <h2 class="section-title">CONCEPT</h2>
     </div>
+
     <div class="section-copy">
-      <p>テーマは、<strong>「何かの“あと”の、ナルトとサスケ。」</strong></p>
+
+      <p>
+        テーマは、
+        <strong>「何かの“あと”の、ナルトとサスケ。」</strong>
+      </p>
+
       <ul class="after-list">
         <li>任務のあと。</li>
         <li>喧嘩のあと。</li>
@@ -561,26 +754,32 @@ body.public-mode .public-only{display:block}
         <li>何でもない一日のあと。</li>
         <li>あなたが思うナルサスの“あと”。</li>
       </ul>
+
       <p>
         何の「あと」を描くかは、執筆者さまにお任せします。<br>
         年齢・時系列・世界観は問いません。原作軸、パロディなども含め、
         それぞれの「そのあと、ふたりで。」を自由に制作してください。
       </p>
+
     </div>
+
     <div class="callout">
       <strong>全年齢作品のみ</strong><br>
       キス等を含む全年齢の範囲内の恋愛・接触描写はOKです。<br>
       詳細な作品規定は、参加確定後にご案内します。
     </div>
+
   </section>
 
   <section class="section">
+
     <div class="section-head">
       <span class="section-num">02</span>
       <h2 class="section-title">FORMAT</h2>
     </div>
 
     <div class="format-grid">
+
       <article class="format-card">
         <h3>COMIC</h3>
         <p>
@@ -589,6 +788,7 @@ body.public-mode .public-only{display:block}
           詳細な入稿仕様は参加確定後にご案内します。
         </p>
       </article>
+
       <article class="format-card">
         <h3>NOVEL</h3>
         <p>
@@ -597,6 +797,7 @@ body.public-mode .public-only{display:block}
           組版は主催側で対応します。テキストデータでご提出いただけます。
         </p>
       </article>
+
       <article class="format-card">
         <h3>COLOR ILLUSTRATION</h3>
         <p>
@@ -605,45 +806,94 @@ body.public-mode .public-only{display:block}
           巻頭・巻末のカラー口絵として収録予定です。
         </p>
       </article>
+
     </div>
+
   </section>
 
   <section class="section">
+
     <div class="section-head">
       <span class="section-num">03</span>
       <h2 class="section-title">BOOK</h2>
     </div>
 
     <div class="book">
+
       <div class="book-visual-wrap">
+
         <div class="book-visual">
-          <!-- 松浦さんKV差し替え時:
-          <img class="book-cover-img" src="assets/cover-illustration.jpg" alt="『そのあと、ふたりで。』カバーイラスト">
-          -->
+          <img
+            class="book-cover-img"
+            src="assets/KV_CYNS2027.jpeg"
+            alt="『そのあと、ふたりで。』カバーイラスト"
+          >
         </div>
-        <div class="book-size-label">少年コミック判｜112 × 176 mm</div>
+
+        <div class="book-size-label">
+          少年コミック判｜112 × 176 mm
+        </div>
+
         <div class="book-credit">
           <strong>COVER ILLUSTRATION：松浦</strong><br>
           ※表紙デザインは現在制作中です。
         </div>
+
       </div>
 
       <div>
+
         <p class="section-copy" style="margin-top:0">
           原作の単行本を読んできた方に馴染みのある読書体験を届けたい、という思いから、
           一般的な同人アンソロジーよりひと回り小さな少年コミック判を採用しています。
         </p>
+
         <div class="specs">
-          <div class="spec-row"><span class="spec-key">SIZE</span><span>112 × 176 mm（少年コミック判）</span></div>
-          <div class="spec-row"><span class="spec-key">カバー</span><span>4C＋蛍光イエロー特色＋クリアPP</span></div>
-          <div class="spec-row"><span class="spec-key">小口</span><span>蛍光イエロー染め</span></div>
-          <div class="spec-row"><span class="spec-key">本体表紙</span><span>スミ1C＋マットPP</span></div>
-          <div class="spec-row"><span class="spec-key">カラー口絵</span><span>b7トラネクスト86</span></div>
-          <div class="spec-row"><span class="spec-key">本文</span><span>フロンティタフ62.5</span></div>
-          <div class="spec-row"><span class="spec-key">その他</span><span>帯あり</span></div>
-          <div class="spec-row"><span class="spec-key">印刷</span><span>西村謄写堂</span></div>
+
+          <div class="spec-row">
+            <span class="spec-key">SIZE</span>
+            <span>112 × 176 mm（少年コミック判）</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">カバー</span>
+            <span>4C＋蛍光イエロー特色＋クリアPP</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">小口</span>
+            <span>蛍光イエロー染め</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">本体表紙</span>
+            <span>スミ1C＋マットPP</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">カラー口絵</span>
+            <span>b7トラネクスト86</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">本文</span>
+            <span>フロンティタフ62.5</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">その他</span>
+            <span>帯あり</span>
+          </div>
+
+          <div class="spec-row">
+            <span class="spec-key">印刷</span>
+            <span>西村謄写堂</span>
+          </div>
+
         </div>
+
       </div>
+
     </div>
 
     <div class="callout" style="border-left-color:var(--blue);background:#fff">
@@ -656,15 +906,18 @@ body.public-mode .public-only{display:block}
       参加者の皆さま全員に、参加して良かったと思っていただける一冊を目指します。<br>
       原稿作成の上でご不安なことがございましたらお気軽にご連絡くださいませ。
     </div>
+
   </section>
 
   <section class="section invite-only">
+
     <div class="section-head">
       <span class="section-num">04</span>
       <h2 class="section-title">FOR CONTRIBUTORS</h2>
     </div>
 
     <div class="support">
+
       <article class="support-card yellow">
         <h3>初めてでも大丈夫です。</h3>
         <p>
@@ -673,92 +926,133 @@ body.public-mode .public-only{display:block}
           主催側で対応できる部分は最大限サポートいたします。
         </p>
       </article>
+
       <article class="support-card">
         <h3>詳細仕様は参加確定後に。</h3>
         <p>
           塗り足し、解像度、ファイル形式、テンプレート、提出方法などの詳細は別途ご案内します。
         </p>
       </article>
+
     </div>
+
   </section>
 
   <section class="section invite-only">
+
     <div class="section-head">
       <span class="section-num">05</span>
       <h2 class="section-title">GIFT</h2>
     </div>
 
     <div class="gift">
-      <div class="gift-kicker">FOR ALL CONTRIBUTORS</div>
-      <strong>献本 ＋ アンソロセット一式</strong>
+
+      <div class="gift-kicker">
+        FOR ALL CONTRIBUTORS
+      </div>
+
+      <strong>
+        献本 ＋ アンソロセット一式
+      </strong>
+
       <p class="section-copy" style="margin-bottom:0">
         完成後、ご参加の記念としてお受け取りいただけましたら幸いです。<br>
         イベントへ直接参加されない方・海外在住の方には<br>
         郵送を予定しています。
       </p>
+
     </div>
+
   </section>
 
   <section class="section invite-only">
+
     <div class="section-head">
       <span class="section-num">06</span>
       <h2 class="section-title">CONTACT</h2>
     </div>
 
-   <div class="contact">
-  <div class="contact-card">
-    <h3>PLANNED BY</h3>
-    <p>
-      awase
-    </p>
-  </div>
+    <div class="contact">
 
-  <div class="contact-card">
-    <h3>CONTACT</h3>
-    <p>
-      MAIL：
-      <a href="mailto:custom.your.narusasu@gmail.com">
-        custom.your.narusasu@gmail.com
-      </a><br>
+      <div class="contact-card">
+        <h3>PLANNED BY</h3>
+        <p>
+          awase
+        </p>
+      </div>
 
-      X（個人）：
-      <a href="https://x.com/Saly73xx" target="_blank" rel="noopener">
-        @Saly73xx
-      </a><br>
+      <div class="contact-card">
 
-      X（企画）：
-      <a href="https://x.com/CUSTOM_YOUR_NS" target="_blank" rel="noopener">
-        @CUSTOM_YOUR_NS
-      </a>
-    </p>
-  </div>
-</div>
+        <h3>CONTACT</h3>
+
+        <p>
+          MAIL：
+          <a href="mailto:custom.your.narusasu@gmail.com">
+            custom.your.narusasu@gmail.com
+          </a><br>
+
+          X（個人）：
+          <a href="https://x.com/Saly73xx" target="_blank" rel="noopener">
+            @Saly73xx
+          </a><br>
+
+          X（企画）：
+          <a href="https://x.com/CUSTOM_YOUR_NS" target="_blank" rel="noopener">
+            @CUSTOM_YOUR_NS
+          </a>
+        </p>
+
+      </div>
+
+    </div>
 
     <div class="contact-notes">
-      <p>原稿制作中の不明点・ご相談も含め、いつでもご連絡ください。</p>
-      <p>2027年7月18日（日）東京ビッグサイトにて開催される、<br>
-      赤ブーブー通信社主催 ナルト×サスケオンリー「ほうき星が尾を引けば」内の有志企画です。</p>
-      <p>本企画は個人による非公式ファン企画です。原作者・出版社・その他公式関係各社とは一切関係ありません。</p>
+
+      <p>
+        原稿制作中の不明点・ご相談も含め、いつでもご連絡ください。
+      </p>
+
+      <p>
+        2027年7月18日（日）東京ビッグサイトにて開催される、<br>
+        赤ブーブー通信社主催 ナルト×サスケオンリー「ほうき星が尾を引けば」内の有志企画です。
+      </p>
+
+      <p>
+        本企画は個人による非公式ファン企画です。原作者・出版社・その他公式関係各社とは一切関係ありません。
+      </p>
+
     </div>
+
   </section>
 
-  <!-- 2027年5月の一般公開時に表示する枠。
-       body に class="public-mode" を追加すると invite-only が消え、
-       public-only が表示されます。 -->
+  <!--
+    2027年5月の一般公開時に表示する枠。
+    body に class="public-mode" を追加すると
+    invite-only が消え、public-only が表示されます。
+  -->
+
   <section class="section public-only">
+
     <div class="section-head">
       <span class="section-num">04</span>
       <h2 class="section-title">CONTRIBUTORS</h2>
     </div>
+
     <div class="callout">
       2027年5月公開時：執筆者 × テーマ一覧をここへ差し替え。
     </div>
+
   </section>
 
   <footer class="footer">
-    <div class="footer-main">CUSTOM YOUR NARUSASU</div>
-    <div class="footer-sub">2027 NARUTO × SASUKE ONLY PROJECT</div>
+    <div class="footer-main">
+      CUSTOM YOUR NARUSASU
+    </div>
+    <div class="footer-sub">
+      2027 NARUTO × SASUKE ONLY PROJECT
+    </div>
   </footer>
+
 </main>
 </body>
 </html>
