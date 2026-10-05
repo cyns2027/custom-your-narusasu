@@ -18,12 +18,12 @@ window.CYNS_ABOUT = {
       href: "mailto:custom.your.narusasu@gmail.com"
     },
     {
-      label: "X（企画用アカウント）",
+      label: "X（企画）",
       value: "@CUSTOM_YOUR_NS",
       href: "https://x.com/CUSTOM_YOUR_NS"
     },
     {
-      label: "X（主催個人アカウント）",
+      label: "X（主催個人）",
       value: "@Saly73xx",
       href: "https://x.com/Saly73xx"
     }
