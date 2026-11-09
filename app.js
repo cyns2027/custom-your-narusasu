@@ -47,9 +47,9 @@
 
   function releaseCardHtml(r, mode='released'){
     const isNext = mode === 'next';
-    const image = r.thumbnail
+    const media = r.thumbnail
       ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
-      : `<div class="release-thumb-fallback" aria-hidden="true"><span>${escapeHtml(r.dateLabel || '')}</span><strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong></div>`;
+      : `<span class="release-thumb-empty" aria-hidden="true"></span>`;
 
     return `
       <button
@@ -57,10 +57,15 @@
         type="button"
         data-release-id="${escapeHtml(r.id)}"
         ${isNext ? 'disabled aria-disabled="true"' : ''}
-        aria-label="${escapeHtml(`${r.dateLabel || ''} ${r.name || r.title || ''} ${isNext ? 'NEXT' : 'OPEN'}`.trim())}"
+        aria-label="${escapeHtml(`${r.dateLabel || ''} ${r.name || r.title || ''}`.trim())}"
       >
-        <span class="release-thumb">${image}</span>
-        <span class="release-card-status">${isNext ? 'NEXT' : 'OPEN'}</span>
+        <span class="release-thumb">
+          ${media}
+          <span class="release-card-copy">
+            <span class="release-card-date">${escapeHtml(r.dateLabel || '')}</span>
+            <strong class="release-card-name">${escapeHtml(r.name || r.title || 'INFORMATION')}</strong>
+          </span>
+        </span>
         ${r.pinned && !isNext ? '<span class="release-card-pin" aria-label="Pinned">PIN</span>' : ''}
       </button>`;
   }
@@ -167,7 +172,7 @@
             <span class="release-all-thumb">
               ${r.thumbnail
                 ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
-                : `<span class="release-thumb-fallback"><span>${escapeHtml(r.dateLabel || '')}</span><strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong></span>`}
+                : `<span class="release-thumb-empty" aria-hidden="true"></span>`}
             </span>
             <span class="release-all-meta">
               <strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong>

@@ -206,48 +206,11 @@ body::before{
 .release-thumb{display:block;width:100%;height:100%}
 .release-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 
-.release-thumb-fallback{
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  width:100%;
-  height:100%;
-  padding:10px;
-  background:linear-gradient(145deg,#f2f3f4,#e1e4e7);
-  color:#5d6066;
-}
-.release-thumb-fallback span{
-  display:block;
-  font-family:"Oxanium","Arial Black",sans-serif;
-  font-size:8px;
-  letter-spacing:.06em;
-}
-.release-thumb-fallback strong{
-  display:block;
-  margin-top:4px;
-  font-size:10px;
-  line-height:1.25;
-}
-
-.release-card-status{
-  position:absolute;
-  right:7px;
-  bottom:7px;
-  min-width:38px;
-  padding:4px 6px 3px;
-  background:#111;
-  color:#fff;
-  font-family:"Oxanium","Arial Black",sans-serif;
-  font-size:7px;
-  line-height:1;
-  text-align:center;
-  letter-spacing:.08em;
-}
-
 .release-card-pin{
   position:absolute;
   left:7px;
   top:7px;
+  z-index:4;
   padding:4px 6px 3px;
   background:var(--yellow);
   color:#111;
@@ -255,17 +218,6 @@ body::before{
   font-size:7px;
   line-height:1;
   letter-spacing:.08em;
-}
-
-.release-card.is-next{cursor:default}
-.release-card.is-next .release-thumb{filter:grayscale(1);opacity:.42}
-.release-card.is-next .release-card-status{background:#b8bbc0}
-.release-card.is-next::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:1px solid #d9dadd;
-  pointer-events:none;
 }
 
 .release-dots{
@@ -334,8 +286,6 @@ body::before{
   background:#f4f4f1;
 }
 .release-all-thumb img{display:block;width:100%;height:100%;object-fit:cover}
-.release-all-thumb .release-thumb-fallback{min-height:100%}
-
 .release-all-meta{display:block;padding-top:6px}
 .release-all-meta strong{
   display:block;
@@ -361,10 +311,118 @@ body::before{
 
 @media(max-width:640px){
   .release-grid{gap:6px}
-  .release-card-status{right:5px;bottom:5px;font-size:6px;min-width:34px}
-  .release-card-pin{left:5px;top:5px;font-size:6px}
-  .release-thumb-fallback{padding:7px}
-  .release-thumb-fallback span{font-size:6px}
-  .release-thumb-fallback strong{font-size:8px}
   .release-all-grid{gap:7px}
+}
+
+
+/* =========================================================
+   v4.4.1 RELEASE CARD VISUAL UPDATE
+   ========================================================= */
+
+.release-thumb{
+  position:relative;
+}
+
+.release-thumb-empty{
+  display:block;
+  width:100%;
+  height:100%;
+  background:#eceeef;
+}
+
+.release-card-copy{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:2;
+  display:block;
+  padding:34px 10px 10px;
+  background:linear-gradient(
+    to top,
+    rgba(255,255,255,.94) 0%,
+    rgba(255,255,255,.78) 52%,
+    rgba(255,255,255,0) 100%
+  );
+  color:#111;
+  text-align:left;
+  pointer-events:none;
+}
+
+.release-card-date{
+  display:block;
+  margin-bottom:3px;
+  color:#111;
+  font-family:"Oxanium","Arial Black",sans-serif;
+  font-size:8px;
+  font-weight:800;
+  line-height:1.15;
+  letter-spacing:.04em;
+}
+
+.release-card-name{
+  display:block;
+  color:#111;
+  font-size:10px;
+  font-weight:900;
+  line-height:1.25;
+  letter-spacing:-.01em;
+}
+
+/* NEXT = same layout, but visually inactive and unclickable */
+.release-card.is-next{
+  cursor:default;
+  background:#eceeef;
+}
+
+.release-card.is-next .release-thumb img{
+  filter:grayscale(1);
+  opacity:.40;
+}
+
+.release-card.is-next .release-thumb-empty{
+  background:#e4e6e8;
+}
+
+.release-card.is-next .release-card-copy{
+  background:linear-gradient(
+    to top,
+    rgba(238,240,242,.98) 0%,
+    rgba(238,240,242,.90) 55%,
+    rgba(238,240,242,.20) 100%
+  );
+}
+
+.release-card.is-next .release-card-date,
+.release-card.is-next .release-card-name{
+  color:#8c8f94;
+}
+
+.release-card.is-next::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:3;
+  border:1px solid #d8dade;
+  pointer-events:none;
+}
+
+.release-all-thumb .release-thumb-empty{
+  width:100%;
+  height:100%;
+  background:#eceeef;
+}
+
+@media(max-width:640px){
+  .release-card-copy{
+    padding:28px 7px 7px;
+  }
+  .release-card-date{
+    font-size:6px;
+    margin-bottom:2px;
+  }
+  .release-card-name{
+    font-size:8px;
+    line-height:1.22;
+  }
 }
