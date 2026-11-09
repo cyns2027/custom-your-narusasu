@@ -9,8 +9,6 @@
   const modalContent = document.getElementById('modalContent');
   const modalKicker = document.getElementById('modalKicker');
   const releaseList = document.getElementById('releaseList');
-  const nextLabel = document.getElementById('nextLabel');
-  const nextDate = document.getElementById('nextDate');
   const aboutButton = document.getElementById('aboutButton');
   let running = false;
   let activeId = null;
@@ -28,34 +26,171 @@
   const published = () => releases.filter(r => r.published);
   const future = () => releases.filter(r => !r.published);
 
-  function renderNext(){
-    const next = future()[0];
-    if(next){
-      nextLabel.textContent = 'NEXT INFORMATION';
-      nextDate.textContent = next.dateLabel;
-    }else{
-      nextLabel.textContent = 'ALL INFORMATION RELEASED';
-      nextDate.textContent = 'CLOSED';
-    }
+  function dateValue(r){
+    const raw = String(r.sortDate || r.dateLabel || '').trim().replace(/\./g,'-');
+    const normalized = /^\d{4}-\d{2}$/.test(raw) ? `${raw}-01` : raw;
+    const t = Date.parse(normalized);
+    return Number.isFinite(t) ? t : 0;
+  }
+
+  const publishedNewest = () => published().slice().sort((a,b) => dateValue(b) - dateValue(a));
+  const futureNearest = () => future().slice().sort((a,b) => dateValue(a) - dateValue(b));
+
+  function uniqueById(items){
+    const seen = new Set();
+    return items.filter(item => {
+      if(!item || seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  }
+
+  function releaseCardHtml(r, mode='released'){
+    const isNext = mode === 'next';
+    const image = r.thumbnail
+      ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
+      : `<div class="release-thumb-fallback" aria-hidden="true"><span>${escapeHtml(r.dateLabel || '')}</span><strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong></div>`;
+
+    return `
+      <button
+        class="release-card${isNext ? ' is-next' : ''}"
+        type="button"
+        data-release-id="${escapeHtml(r.id)}"
+        ${isNext ? 'disabled aria-disabled="true"' : ''}
+        aria-label="${escapeHtml(`${r.dateLabel || ''} ${r.name || r.title || ''} ${isNext ? 'NEXT' : 'OPEN'}`.trim())}"
+      >
+        <span class="release-thumb">${image}</span>
+        <span class="release-card-status">${isNext ? 'NEXT' : 'OPEN'}</span>
+        ${r.pinned && !isNext ? '<span class="release-card-pin" aria-label="Pinned">PIN</span>' : ''}
+      </button>`;
+  }
+
+  function firstReleasePanel(){
+    const pub = publishedNewest();
+    const next = futureNearest()[0] || null;
+    const pinned = pub
+      .filter(r => r.pinned)
+      .sort((a,b) => (Number(a.pinOrder)||999) - (Number(b.pinOrder)||999));
+
+    return uniqueById([
+      pub[0] || null,
+      next,
+      ...pinned,
+      ...pub
+    ]).slice(0,6);
+  }
+
+  function remainingReleasePanels(firstItems){
+    const firstIds = new Set(firstItems.filter(Boolean).map(r => r.id));
+    const remaining = publishedNewest().filter(r => !firstIds.has(r.id));
+    const pages = [];
+    for(let i=0;i<remaining.length;i+=6) pages.push(remaining.slice(i,i+6));
+    return pages;
+  }
+
+  function renderCarouselDots(totalPages){
+    if(totalPages <= 1) return '';
+    return `<div class="release-dots" aria-label="Release pages">
+      ${Array.from({length:totalPages},(_,i)=>`<button type="button" class="release-dot${i===0?' is-active':''}" data-release-page="${i}" aria-label="${i+1}ページ目"></button>`).join('')}
+    </div>`;
   }
 
   function renderReleases(){
-    releaseList.innerHTML = '';
-    releases.forEach(r => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = `release-row${r.published ? '' : ' future'}`;
-      if(!r.published){ btn.disabled = true; btn.setAttribute('aria-disabled','true'); }
-      btn.innerHTML = `
-        <span class="release-num">${escapeHtml(r.number)}</span>
-        <span class="release-main">
-          <span class="release-head"><span class="release-date">${escapeHtml(r.dateLabel)}</span><span class="release-name">${escapeHtml(r.name)}</span></span>
-          <span class="release-sub">${escapeHtml(r.teaser || '')}</span>
-        </span>
-        <span class="release-open">${r.published ? 'OPEN' : 'NEXT'}</span>`;
-      if(r.published) btn.addEventListener('click', () => openRelease(r.id, true));
-      releaseList.appendChild(btn);
+    const first = firstReleasePanel();
+    const next = futureNearest()[0] || null;
+    const pages = [first, ...remainingReleasePanels(first)];
+
+    if(!pages.some(page => page.length)){
+      releaseList.innerHTML = `<div class="release-empty">INFORMATION COMING SOON</div>`;
+      return;
+    }
+
+    releaseList.innerHTML = `
+      <div class="release-carousel" id="releaseCarousel">
+        ${pages.map((page,pageIndex) => `
+          <div class="release-page" data-release-page-panel="${pageIndex}">
+            <div class="release-grid">
+              ${page.map(r => releaseCardHtml(
+                r,
+                (!r.published && next && r.id===next.id) ? 'next' : 'released'
+              )).join('')}
+            </div>
+          </div>`).join('')}
+      </div>
+      ${renderCarouselDots(pages.length)}
+      <button class="release-all-button" id="releaseAllButton" type="button">OPEN ALL</button>`;
+
+    releaseList.querySelectorAll('.release-card:not(.is-next)').forEach(btn => {
+      btn.addEventListener('click', () => openRelease(btn.dataset.releaseId, true));
     });
+
+    const carousel = document.getElementById('releaseCarousel');
+    const dots = [...releaseList.querySelectorAll('.release-dot')];
+
+    if(carousel && dots.length){
+      let ticking = false;
+      carousel.addEventListener('scroll', () => {
+        if(ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const pageWidth = carousel.clientWidth || 1;
+          const page = Math.round(carousel.scrollLeft / pageWidth);
+          dots.forEach((dot,i)=>dot.classList.toggle('is-active', i===page));
+          ticking = false;
+        });
+      }, {passive:true});
+
+      dots.forEach(dot => {
+        dot.addEventListener('click', () => {
+          const page = Number(dot.dataset.releasePage || 0);
+          carousel.scrollTo({left: carousel.clientWidth * page, behavior:'smooth'});
+        });
+      });
+    }
+
+    const allButton = document.getElementById('releaseAllButton');
+    if(allButton) allButton.addEventListener('click', openAllReleases);
+  }
+
+  function openAllReleases(updateHash=true){
+    const items = publishedNewest();
+    activeId = 'all';
+
+    if(modalKicker){
+      modalKicker.hidden = false;
+      modalKicker.textContent = 'ALL INFORMATION';
+    }
+
+    const cards = items.length
+      ? items.map(r => `
+          <button class="release-all-card" type="button" data-all-release-id="${escapeHtml(r.id)}">
+            <span class="release-all-thumb">
+              ${r.thumbnail
+                ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
+                : `<span class="release-thumb-fallback"><span>${escapeHtml(r.dateLabel || '')}</span><strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong></span>`}
+            </span>
+            <span class="release-all-meta">
+              <strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong>
+              <small>${escapeHtml(r.dateLabel || '')}</small>
+            </span>
+          </button>`).join('')
+      : `<p class="release-all-empty">まだ公開済みの情報はありません。</p>`;
+
+    modalContent.innerHTML = `
+      <div class="modal-heading">
+        <h2 id="modalTitle">ALL INFORMATION</h2>
+      </div>
+      <div class="release-all-grid">${cards}</div>`;
+
+    modalContent.querySelectorAll('[data-all-release-id]').forEach(btn => {
+      btn.addEventListener('click', () => openRelease(btn.dataset.allReleaseId, true));
+    });
+
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+    modalPanel.scrollTop = 0;
+    if(updateHash) history.replaceState(null,'','#all');
   }
 
   function nextCapsule(){
@@ -139,7 +274,7 @@
   }
 
   function openRelease(id, updateHash=true){
-    if(modalKicker) modalKicker.hidden = false;
+    if(modalKicker){ modalKicker.hidden = false; modalKicker.textContent = 'RELEASED INFORMATION'; }
     const r = releases.find(x => x.id === id && x.published);
     if(!r) return false;
     activeId = r.id;
@@ -165,7 +300,7 @@
     modal.setAttribute('aria-hidden','true');
     document.body.style.overflow = '';
     activeId = null;
-    if(modalKicker) modalKicker.hidden = false;
+    if(modalKicker){ modalKicker.hidden = false; modalKicker.textContent = 'RELEASED INFORMATION'; }
     if(location.hash) history.replaceState(null,'',location.pathname + location.search);
   }
 
@@ -191,6 +326,10 @@
       openAbout(false);
       return;
     }
+    if(id === 'all'){
+      openAllReleases(false);
+      return;
+    }
     openRelease(id, false);
   }
 
@@ -202,7 +341,6 @@
   window.addEventListener('hashchange', openHash);
 
   renderReleases();
-  renderNext();
   syncMachine();
   openHash();
 })();
