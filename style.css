@@ -426,3 +426,33 @@ body::before{
     line-height:1.22;
   }
 }
+/* =========================================================
+   OPEN ALL thumbnail size fix
+   スマホでもサムネイルを完全な正方形に固定
+   ========================================================= */
+
+.release-all-card{
+  min-width:0;
+}
+
+.release-all-thumb{
+  position:relative;
+  display:block;
+  width:100%;
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  background:#eceeef;
+}
+
+.release-all-thumb > img,
+.release-all-thumb > .release-thumb-empty{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+}
+
+.release-all-thumb > img{
+  object-fit:cover;
+}
