@@ -129,14 +129,14 @@ window.CYNS_RELEASES = [
     sortDate: "2026-12-21",
 
     // OPEN ALL一覧などで使用する名称。
-    name: "？？？",
+    name: "ナルサスアンソロジー2027 制作決定！",
 
     // 更新内容の簡潔な補足。
     teaser: "『そのあと、ふたりで。』TEASER",
 
     // トップカード用の正方形サムネイル画像。
     // 公開時にassets/releases/へ画像をアップして入力。
-    thumbnail: "",
+    thumbnail: "./assets/releases/アンソロジー告知-1.png",
 
     // サムネイルの代替テキスト。
     thumbnailAlt: "",
@@ -151,7 +151,7 @@ window.CYNS_RELEASES = [
     // false = NEXT
     // true = OPEN
     // 公開日にtrueへ変更。
-    published: false,
+    published: true,
 
     // 通常のお知らせ。
     type: "information",
@@ -160,11 +160,11 @@ window.CYNS_RELEASES = [
 
     // モーダル大見出し。
     // 公開時に入力。
-    title: "",
+    title: "アンソロジー制作決定！",
 
     // モーダル内画像。
     // 不要なら空欄。
-    image: "",
+    image: "./assets/releases/アンソロジー告知-1.png",
 
     // モーダル内画像の代替テキスト。
     imageAlt: "",
@@ -174,15 +174,17 @@ window.CYNS_RELEASES = [
 
     // モーダル本文。
     // 文章を配列形式で追加する。
-    body: [],
+    body: [
+      "NARUTO × SASUKE ANTHOLOGY 2027『そのあと、ふたりで。』の制作が決定しました！"
+"2027年春、詳細公開予定🍥🍅"],
 
     // モーダル下部CTAの文字。
     // 不要なら空欄。
-    ctaText: "",
+    ctaText: "企画用Xを見る",
 
     // CTAリンク先。
     // 不要なら空欄。
-    ctaUrl: ""
+    ctaUrl: "https://x.com/CUSTOM_YOUR_NS"
   },
 
 
