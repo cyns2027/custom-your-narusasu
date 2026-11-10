@@ -511,3 +511,13 @@ body::before{
   margin:0;
   padding-top:6px;
 }
+/* =========================================================
+   ABOUT modal close button position fix
+   ========================================================= */
+
+#modalClose{
+  position:absolute;
+  top:18px;
+  right:18px;
+  left:auto;
+}
