@@ -77,12 +77,22 @@
       .filter(r => r.pinned)
       .sort((a,b) => (Number(a.pinOrder)||999) - (Number(b.pinOrder)||999));
 
-    return uniqueById([
+    // PIN 1〜3は最上段3枠を最優先で固定。
+    // pinned:true の公開済み情報を pinOrder 順に並べ、
+    // 最初の3件をトップ行へ置く。
+    const pinnedTop = pinned.slice(0,3);
+
+    // 2段目以降は、
+    // 最新OPEN → NEXT → 4件目以降のPIN → その他OPEN
+    // の順で埋める。重複は自動除外。
+    const fillers = uniqueById([
       pub[0] || null,
       next,
-      ...pinned,
+      ...pinned.slice(3),
       ...pub
-    ]).slice(0,6);
+    ]).filter(item => !pinnedTop.some(pin => pin.id === item.id));
+
+    return [...pinnedTop, ...fillers].slice(0,6);
   }
 
   function remainingReleasePanels(firstItems){
