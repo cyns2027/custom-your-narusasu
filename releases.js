@@ -77,7 +77,7 @@ window.CYNS_RELEASES = [
     // ↓↓↓ ここから「カードをクリックした後のモーダル」の内容 ↓↓↓
 
     // モーダルの大見出し。
-    title: "CUSTOM YOUR NARUSASU OPEN",
+    title: "企画X & 特設サイト OPEN",
 
     // モーダル本文内に表示する画像。
     // 不要な場合は "" のままでOK。
