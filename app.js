@@ -19,343 +19,1233 @@
     setTimeout(() => intro.classList.add('is-done'), 565);
   });
 
-  const escapeHtml = (value='') => String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const escapeHtml = (value='') => String(value).replace(/[&<>'"]/g, c => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    "'":'&#39;',
+    '"':'&quot;'
+  }[c]));
+
   const openedKey = id => `cyns:release:v1:${id}:opened`;
   const isOpened = id => localStorage.getItem(openedKey(id)) === '1';
   const setOpened = id => localStorage.setItem(openedKey(id), '1');
+
+  // 公開済み情報
   const published = () => releases.filter(r => r.published);
+
+  // 未公開情報はreleases.js内に保持するが、
+  // RELEASED INFORMATIONには表示しない。
   const future = () => releases.filter(r => !r.published);
 
   function dateValue(r){
-    const raw = String(r.sortDate || r.dateLabel || '').trim().replace(/\./g,'-');
-    const normalized = /^\d{4}-\d{2}$/.test(raw) ? `${raw}-01` : raw;
+    const raw = String(r.sortDate || r.dateLabel || '')
+      .trim()
+      .replace(/\./g,'-');
+
+    const normalized = /^\d{4}-\d{2}$/.test(raw)
+      ? `${raw}-01`
+      : raw;
+
     const t = Date.parse(normalized);
     return Number.isFinite(t) ? t : 0;
   }
 
-  const publishedNewest = () => published().slice().sort((a,b) => dateValue(b) - dateValue(a));
-  const futureNearest = () => future().slice().sort((a,b) => dateValue(a) - dateValue(b));
+  // 公開済み情報を新しい順に並べる
+  const publishedNewest = () => published()
+    .slice()
+    .sort((a,b) => dateValue(b) - dateValue(a));
+
 
   function uniqueById(items){
     const seen = new Set();
+
     return items.filter(item => {
       if(!item || seen.has(item.id)) return false;
+
       seen.add(item.id);
       return true;
     });
   }
 
-  function releaseCardHtml(r, mode='released'){
-    const isNext = mode === 'next';
+
+  // =========================================================
+  // RELEASE CARD
+  // 公開済み情報のみ表示
+  // =========================================================
+
+  function releaseCardHtml(r){
+
     const media = r.thumbnail
       ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
       : `<span class="release-thumb-empty" aria-hidden="true"></span>`;
 
     return `
       <button
-        class="release-card${isNext ? ' is-next' : ''}"
+        class="release-card"
         type="button"
         data-release-id="${escapeHtml(r.id)}"
-        ${isNext ? 'disabled aria-disabled="true"' : ''}
         aria-label="${escapeHtml(`${r.dateLabel || ''} ${r.name || r.title || ''}`.trim())}"
       >
         <span class="release-thumb">
           ${media}
+
           <span class="release-card-copy">
-            <span class="release-card-date">${escapeHtml(r.dateLabel || '')}</span>
-            <strong class="release-card-name">${escapeHtml(r.name || r.title || 'INFORMATION')}</strong>
+            <span class="release-card-date">
+              ${escapeHtml(r.dateLabel || '')}
+            </span>
+
+            <strong class="release-card-name">
+              ${escapeHtml(r.name || r.title || 'INFORMATION')}
+            </strong>
           </span>
         </span>
-        ${r.pinned && !isNext ? '<span class="release-card-pin" aria-label="Pinned">PIN</span>' : ''}
+
+        ${r.pinned
+          ? '<span class="release-card-pin" aria-label="Pinned">PIN</span>'
+          : ''}
       </button>`;
   }
 
+
+  // =========================================================
+  // FIRST PANEL
+  //
+  // PIN 1〜3がある場合：
+  //
+  // [ PIN1 ][ PIN2 ][ PIN3 ]
+  // [ 最新 ][ 次   ][ 次   ]
+  //
+  // PINがない場合：
+  //
+  // [ 最新 ][ 次 ][ 次 ]
+  // =========================================================
+
   function firstReleasePanel(){
+
     const pub = publishedNewest();
-    const next = futureNearest()[0] || null;
+
     const pinned = pub
       .filter(r => r.pinned)
-      .sort((a,b) => (Number(a.pinOrder)||999) - (Number(b.pinOrder)||999));
+      .sort(
+        (a,b) =>
+          (Number(a.pinOrder) || 999)
+          -
+          (Number(b.pinOrder) || 999)
+      );
 
-    // PIN 1〜3は最上段3枠を最優先で固定。
-    // pinned:true の公開済み情報を pinOrder 順に並べ、
-    // 最初の3件をトップ行へ置く。
+    // PIN 1〜3は最上段3枠を最優先で固定
     const pinnedTop = pinned.slice(0,3);
 
-    // 2段目以降は、
-    // 最新OPEN → NEXT → 4件目以降のPIN → その他OPEN
-    // の順で埋める。重複は自動除外。
+    // 残りは
+    // 最新OPEN → 4件目以降のPIN → その他OPEN
+    //
+    // 同じ情報が重複しないよう自動除外。
     const fillers = uniqueById([
       pub[0] || null,
-      next,
       ...pinned.slice(3),
       ...pub
-    ]).filter(item => !pinnedTop.some(pin => pin.id === item.id));
+    ]).filter(
+      item =>
+        !pinnedTop.some(pin => pin.id === item.id)
+    );
 
-    return [...pinnedTop, ...fillers].slice(0,6);
+    return [
+      ...pinnedTop,
+      ...fillers
+    ].slice(0,6);
   }
 
+
+  // =========================================================
+  // SECOND PAGE以降
+  // =========================================================
+
   function remainingReleasePanels(firstItems){
-    const firstIds = new Set(firstItems.filter(Boolean).map(r => r.id));
-    const remaining = publishedNewest().filter(r => !firstIds.has(r.id));
+
+    const firstIds = new Set(
+      firstItems
+        .filter(Boolean)
+        .map(r => r.id)
+    );
+
+    const remaining = publishedNewest()
+      .filter(r => !firstIds.has(r.id));
+
     const pages = [];
-    for(let i=0;i<remaining.length;i+=6) pages.push(remaining.slice(i,i+6));
+
+    for(let i=0; i<remaining.length; i+=6){
+      pages.push(
+        remaining.slice(i,i+6)
+      );
+    }
+
     return pages;
   }
 
+
+  // =========================================================
+  // PAGE DOTS
+  // =========================================================
+
   function renderCarouselDots(totalPages){
+
     if(totalPages <= 1) return '';
-    return `<div class="release-dots" aria-label="Release pages">
-      ${Array.from({length:totalPages},(_,i)=>`<button type="button" class="release-dot${i===0?' is-active':''}" data-release-page="${i}" aria-label="${i+1}ページ目"></button>`).join('')}
-    </div>`;
+
+    return `
+      <div
+        class="release-dots"
+        aria-label="Release pages"
+      >
+        ${
+          Array
+            .from(
+              {length:totalPages},
+              (_,i) =>
+                `<button
+                  type="button"
+                  class="release-dot${i===0 ? ' is-active' : ''}"
+                  data-release-page="${i}"
+                  aria-label="${i+1}ページ目"
+                ></button>`
+            )
+            .join('')
+        }
+      </div>`;
   }
 
-  function renderReleases(){
-    const first = firstReleasePanel();
-    const next = futureNearest()[0] || null;
-    const pages = [first, ...remainingReleasePanels(first)];
 
+  // =========================================================
+  // RELEASE LIST
+  // published:true の情報のみ表示
+  // =========================================================
+
+  function renderReleases(){
+
+    const first = firstReleasePanel();
+
+    const pages = [
+      first,
+      ...remainingReleasePanels(first)
+    ];
+
+    // 公開済み情報がまだ1件もない場合
     if(!pages.some(page => page.length)){
-      releaseList.innerHTML = `<div class="release-empty">INFORMATION COMING SOON</div>`;
+
+      releaseList.innerHTML = `
+        <div class="release-empty">
+          INFORMATION COMING SOON
+        </div>
+      `;
+
       return;
     }
 
     releaseList.innerHTML = `
-      <div class="release-carousel" id="releaseCarousel">
-        ${pages.map((page,pageIndex) => `
-          <div class="release-page" data-release-page-panel="${pageIndex}">
-            <div class="release-grid">
-              ${page.map(r => releaseCardHtml(
-                r,
-                (!r.published && next && r.id===next.id) ? 'next' : 'released'
-              )).join('')}
-            </div>
-          </div>`).join('')}
+
+      <div
+        class="release-carousel"
+        id="releaseCarousel"
+      >
+
+        ${
+          pages.map(
+            (page,pageIndex) => `
+
+              <div
+                class="release-page"
+                data-release-page-panel="${pageIndex}"
+              >
+
+                <div class="release-grid">
+
+                  ${
+                    page
+                      .map(
+                        r => releaseCardHtml(r)
+                      )
+                      .join('')
+                  }
+
+                </div>
+
+              </div>
+
+            `
+          ).join('')
+        }
+
       </div>
+
       ${renderCarouselDots(pages.length)}
-      <button class="release-all-button" id="releaseAllButton" type="button">OPEN ALL</button>`;
 
-    releaseList.querySelectorAll('.release-card:not(.is-next)').forEach(btn => {
-      btn.addEventListener('click', () => openRelease(btn.dataset.releaseId, true));
-    });
+      <button
+        class="release-all-button"
+        id="releaseAllButton"
+        type="button"
+      >
+        OPEN ALL
+      </button>
+    `;
 
-    const carousel = document.getElementById('releaseCarousel');
-    const dots = [...releaseList.querySelectorAll('.release-dot')];
+
+    // カードクリック
+    releaseList
+      .querySelectorAll('.release-card')
+      .forEach(btn => {
+
+        btn.addEventListener(
+          'click',
+          () =>
+            openRelease(
+              btn.dataset.releaseId,
+              true
+            )
+        );
+
+      });
+
+
+    // 横スワイプ
+    const carousel =
+      document.getElementById(
+        'releaseCarousel'
+      );
+
+    const dots = [
+      ...releaseList.querySelectorAll(
+        '.release-dot'
+      )
+    ];
+
 
     if(carousel && dots.length){
+
       let ticking = false;
-      carousel.addEventListener('scroll', () => {
-        if(ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const pageWidth = carousel.clientWidth || 1;
-          const page = Math.round(carousel.scrollLeft / pageWidth);
-          dots.forEach((dot,i)=>dot.classList.toggle('is-active', i===page));
-          ticking = false;
-        });
-      }, {passive:true});
+
+      carousel.addEventListener(
+        'scroll',
+        () => {
+
+          if(ticking) return;
+
+          ticking = true;
+
+          requestAnimationFrame(() => {
+
+            const pageWidth =
+              carousel.clientWidth || 1;
+
+            const page =
+              Math.round(
+                carousel.scrollLeft
+                /
+                pageWidth
+              );
+
+            dots.forEach(
+              (dot,i) =>
+                dot.classList.toggle(
+                  'is-active',
+                  i === page
+                )
+            );
+
+            ticking = false;
+
+          });
+
+        },
+        {passive:true}
+      );
+
 
       dots.forEach(dot => {
-        dot.addEventListener('click', () => {
-          const page = Number(dot.dataset.releasePage || 0);
-          carousel.scrollTo({left: carousel.clientWidth * page, behavior:'smooth'});
-        });
+
+        dot.addEventListener(
+          'click',
+          () => {
+
+            const page =
+              Number(
+                dot.dataset.releasePage
+                ||
+                0
+              );
+
+            carousel.scrollTo({
+              left:
+                carousel.clientWidth
+                *
+                page,
+
+              behavior:'smooth'
+            });
+
+          }
+        );
+
       });
+
     }
 
-    const allButton = document.getElementById('releaseAllButton');
-    if(allButton) allButton.addEventListener('click', openAllReleases);
+
+    const allButton =
+      document.getElementById(
+        'releaseAllButton'
+      );
+
+    if(allButton){
+      allButton.addEventListener(
+        'click',
+        openAllReleases
+      );
+    }
   }
+
+
+  // =========================================================
+  // OPEN ALL
+  // 公開済み情報を新しい順に一覧表示
+  // =========================================================
 
   function openAllReleases(updateHash=true){
-    const items = publishedNewest();
+
+    const items =
+      publishedNewest();
+
     activeId = 'all';
 
+
     if(modalKicker){
+
       modalKicker.hidden = false;
-      modalKicker.textContent = 'ALL INFORMATION';
+
+      modalKicker.textContent =
+        'ALL INFORMATION';
+
     }
+
 
     const cards = items.length
+
       ? items.map(r => `
-          <button class="release-all-card" type="button" data-all-release-id="${escapeHtml(r.id)}">
+
+          <button
+            class="release-all-card"
+            type="button"
+            data-all-release-id="${escapeHtml(r.id)}"
+          >
+
             <span class="release-all-thumb">
-              ${r.thumbnail
-                ? `<img src="${escapeHtml(r.thumbnail)}" alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}">`
-                : `<span class="release-thumb-empty" aria-hidden="true"></span>`}
+
+              ${
+                r.thumbnail
+
+                  ? `<img
+                      src="${escapeHtml(r.thumbnail)}"
+                      alt="${escapeHtml(r.thumbnailAlt || r.title || r.name || '')}"
+                    >`
+
+                  : `<span
+                      class="release-thumb-empty"
+                      aria-hidden="true"
+                    ></span>`
+              }
+
             </span>
+
             <span class="release-all-meta">
-              <strong>${escapeHtml(r.name || r.title || 'INFORMATION')}</strong>
-              <small>${escapeHtml(r.dateLabel || '')}</small>
+
+              <strong>
+                ${
+                  escapeHtml(
+                    r.name
+                    ||
+                    r.title
+                    ||
+                    'INFORMATION'
+                  )
+                }
+              </strong>
+
+              <small>
+                ${escapeHtml(r.dateLabel || '')}
+              </small>
+
             </span>
-          </button>`).join('')
-      : `<p class="release-all-empty">まだ公開済みの情報はありません。</p>`;
+
+          </button>
+
+        `).join('')
+
+      : `
+        <p class="release-all-empty">
+          まだ公開済みの情報はありません。
+        </p>
+      `;
+
 
     modalContent.innerHTML = `
-      <div class="modal-heading">
-        <h2 id="modalTitle">ALL INFORMATION</h2>
-      </div>
-      <div class="release-all-grid">${cards}</div>`;
 
-    modalContent.querySelectorAll('[data-all-release-id]').forEach(btn => {
-      btn.addEventListener('click', () => openRelease(btn.dataset.allReleaseId, true));
-    });
+      <div class="modal-heading">
+
+        <h2 id="modalTitle">
+          ALL INFORMATION
+        </h2>
+
+      </div>
+
+      <div class="release-all-grid">
+
+        ${cards}
+
+      </div>
+    `;
+
+
+    modalContent
+      .querySelectorAll(
+        '[data-all-release-id]'
+      )
+      .forEach(btn => {
+
+        btn.addEventListener(
+          'click',
+          () =>
+            openRelease(
+              btn.dataset.allReleaseId,
+              true
+            )
+        );
+
+      });
+
 
     modal.classList.add('show');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
+
+    modal.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
+    document.body.style.overflow =
+      'hidden';
+
     modalPanel.scrollTop = 0;
-    if(updateHash) history.replaceState(null,'','#all');
+
+
+    if(updateHash){
+
+      history.replaceState(
+        null,
+        '',
+        '#all'
+      );
+
+    }
   }
+
+
+  // =========================================================
+  // GACHA
+  //
+  // published:true の情報のみ対象。
+  //
+  // そのブラウザでまだ開いていない情報を優先して出す。
+  // =========================================================
 
   function nextCapsule(){
+
     const pub = published();
-    if(!pub.length) return null;
-    return pub.find(r => !isOpened(r.id)) || pub[pub.length-1];
+
+    if(!pub.length){
+      return null;
+    }
+
+    return (
+      pub.find(
+        r => !isOpened(r.id)
+      )
+      ||
+      pub[pub.length-1]
+    );
   }
+
 
   function syncMachine(){
-    const target = nextCapsule();
+
+    const target =
+      nextCapsule();
+
+
+    // 公開済み情報がまだない場合
     if(!target){
-      const next = future()[0];
+
       turnButton.disabled = true;
-      turnButton.textContent = 'ハンドルをまわす';
+
+      turnButton.textContent =
+        'ハンドルをまわす';
+
       return;
     }
+
+
     turnButton.disabled = false;
+
+
     if(isOpened(target.id)){
-      turnButton.textContent = 'もう一度まわす';
+
+      turnButton.textContent =
+        'もう一度まわす';
+
     }else{
-      turnButton.textContent = 'ハンドルをまわす';
+
+      turnButton.textContent =
+        'ハンドルをまわす';
+
     }
   }
+
+
+  // =========================================================
+  // MODAL BODY
+  // =========================================================
 
   function bodyHtml(body){
-    if(!Array.isArray(body)) return '';
-    return body.map(block => {
-      if(typeof block === 'string') return `<p>${escapeHtml(block)}</p>`;
-      if(block && block.type === 'html') return block.html || '';
-      if(block && block.type === 'list' && Array.isArray(block.items)) return `<ul>${block.items.map(x=>`<li>${escapeHtml(x)}</li>`).join('')}</ul>`;
-      if(block && block.type === 'paragraph') return `<p>${escapeHtml(block.text || '')}</p>`;
+
+    if(!Array.isArray(body)){
       return '';
+    }
+
+
+    return body.map(block => {
+
+      if(typeof block === 'string'){
+
+        return `
+          <p>
+            ${escapeHtml(block)}
+          </p>
+        `;
+
+      }
+
+
+      if(
+        block
+        &&
+        block.type === 'html'
+      ){
+
+        return block.html || '';
+
+      }
+
+
+      if(
+        block
+        &&
+        block.type === 'list'
+        &&
+        Array.isArray(block.items)
+      ){
+
+        return `
+          <ul>
+
+            ${
+              block.items.map(
+                x =>
+                  `<li>${escapeHtml(x)}</li>`
+              ).join('')
+            }
+
+          </ul>
+        `;
+
+      }
+
+
+      if(
+        block
+        &&
+        block.type === 'paragraph'
+      ){
+
+        return `
+          <p>
+            ${escapeHtml(block.text || '')}
+          </p>
+        `;
+
+      }
+
+
+      return '';
+
     }).join('');
   }
+
 
   function informationHtml(r){
-    const image = r.image ? `<div class="modal-media"><img src="${escapeHtml(r.image)}" alt="${escapeHtml(r.imageAlt || '')}">${r.imageCaption ? `<div class="modal-caption">${escapeHtml(r.imageCaption)}</div>` : ''}</div>` : '';
-    const cta = r.ctaText && r.ctaUrl ? `<a class="modal-action" href="${escapeHtml(r.ctaUrl)}">${escapeHtml(r.ctaText)}</a>` : '';
-    return `<div class="modal-heading"><h2 id="modalTitle">${escapeHtml(r.title || r.name)}</h2><div class="modal-date">${escapeHtml(r.dateLabel)}</div></div>${image}<div class="modal-body">${bodyHtml(r.body)}</div>${cta}`;
-  }
 
-  function openAbout(updateHash=true){
-    activeId = 'about';
-    if(modalKicker) modalKicker.hidden = true;
+    const image = r.image
 
-    const about = window.CYNS_ABOUT || {};
-    const introHtml = (about.intro || []).map(p => `<p>${p}</p>`).join('');
-    const creditsHtml = (about.credits || []).map(item => {
-      const content = item.href
-        ? `<a href="${item.href}"${item.href.startsWith('http') ? ' target="_blank" rel="noopener noreferrer"' : ''}>${item.value}</a>`
-        : item.value;
-      return `
-        <div class="about-row">
-          <div class="about-key">${item.label}</div>
-          <div class="about-value">${content}</div>
-        </div>`;
-    }).join('');
-    const notesHtml = (about.notes || []).map(note => `<p class="about-note"><strong>${note}</strong></p>`).join('');
+      ? `
+        <div class="modal-media">
 
-    modalContent.innerHTML = `
+          <img
+            src="${escapeHtml(r.image)}"
+            alt="${escapeHtml(r.imageAlt || '')}"
+          >
+
+          ${
+            r.imageCaption
+
+              ? `
+                <div class="modal-caption">
+                  ${escapeHtml(r.imageCaption)}
+                </div>
+              `
+
+              : ''
+          }
+
+        </div>
+      `
+
+      : '';
+
+
+    const cta =
+      r.ctaText
+      &&
+      r.ctaUrl
+
+        ? `
+          <a
+            class="modal-action"
+            href="${escapeHtml(r.ctaUrl)}"
+          >
+            ${escapeHtml(r.ctaText)}
+          </a>
+        `
+
+        : '';
+
+
+    return `
+
       <div class="modal-heading">
-        <h2 id="modalTitle">${about.title || 'ABOUT'}</h2>
-      </div>
 
-      <div class="modal-body">
-        ${introHtml}
+        <h2 id="modalTitle">
+          ${
+            escapeHtml(
+              r.title
+              ||
+              r.name
+            )
+          }
+        </h2>
 
-        <div class="about-grid">
-          ${creditsHtml}
+        <div class="modal-date">
+          ${escapeHtml(r.dateLabel)}
         </div>
 
+      </div>
+
+      ${image}
+
+      <div class="modal-body">
+        ${bodyHtml(r.body)}
+      </div>
+
+      ${cta}
+    `;
+  }
+
+
+  // =========================================================
+  // ABOUT
+  // =========================================================
+
+  function openAbout(updateHash=true){
+
+    activeId = 'about';
+
+    if(modalKicker){
+      modalKicker.hidden = true;
+    }
+
+
+    const about =
+      window.CYNS_ABOUT
+      ||
+      {};
+
+
+    const introHtml =
+      (about.intro || [])
+        .map(
+          p => `<p>${p}</p>`
+        )
+        .join('');
+
+
+    const creditsHtml =
+      (about.credits || [])
+        .map(item => {
+
+          const content =
+            item.href
+
+              ? `
+                <a
+                  href="${item.href}"
+                  ${
+                    item.href.startsWith('http')
+
+                      ? ' target="_blank" rel="noopener noreferrer"'
+
+                      : ''
+                  }
+                >
+                  ${item.value}
+                </a>
+              `
+
+              : item.value;
+
+
+          return `
+
+            <div class="about-row">
+
+              <div class="about-key">
+                ${item.label}
+              </div>
+
+              <div class="about-value">
+                ${content}
+              </div>
+
+            </div>
+          `;
+
+        })
+        .join('');
+
+
+    const notesHtml =
+      (about.notes || [])
+        .map(
+          note =>
+            `<p class="about-note"><strong>${note}</strong></p>`
+        )
+        .join('');
+
+
+    modalContent.innerHTML = `
+
+      <div class="modal-heading">
+
+        <h2 id="modalTitle">
+          ${about.title || 'ABOUT'}
+        </h2>
+
+      </div>
+
+
+      <div class="modal-body">
+
+        ${introHtml}
+
+
+        <div class="about-grid">
+
+          ${creditsHtml}
+
+        </div>
+
+
         ${notesHtml}
-      </div>`;
+
+      </div>
+    `;
+
 
     modal.classList.add('show');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
+
+    modal.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
+    document.body.style.overflow =
+      'hidden';
+
     modalPanel.scrollTop = 0;
-    if(updateHash) history.replaceState(null,'',`#about`);
+
+
+    if(updateHash){
+
+      history.replaceState(
+        null,
+        '',
+        `#about`
+      );
+
+    }
+
+
     return true;
   }
+
+
+  // =========================================================
+  // RELEASE MODAL
+  // =========================================================
 
   function openRelease(id, updateHash=true){
-    if(modalKicker){ modalKicker.hidden = false; modalKicker.textContent = 'RELEASED INFORMATION'; }
-    const r = releases.find(x => x.id === id && x.published);
-    if(!r) return false;
-    activeId = r.id;
-    setOpened(r.id);
-    if(r.type === 'rally' && window.CYNS_RALLY){
-      modalContent.innerHTML = `<div class="modal-heading"><h2 id="modalTitle">${escapeHtml(r.title || 'POSTCARD RALLY')}</h2><div class="modal-date">${escapeHtml(r.dateLabel)}</div></div><div class="modal-special" id="rallyMount"></div>`;
-      window.CYNS_RALLY.mount(document.getElementById('rallyMount'));
-    }else{
-      modalContent.innerHTML = informationHtml(r);
+
+    if(modalKicker){
+
+      modalKicker.hidden = false;
+
+      modalKicker.textContent =
+        'RELEASED INFORMATION';
+
     }
+
+
+    const r =
+      releases.find(
+        x =>
+          x.id === id
+          &&
+          x.published
+      );
+
+
+    if(!r){
+      return false;
+    }
+
+
+    activeId =
+      r.id;
+
+
+    setOpened(
+      r.id
+    );
+
+
+    if(
+      r.type === 'rally'
+      &&
+      window.CYNS_RALLY
+    ){
+
+      modalContent.innerHTML = `
+
+        <div class="modal-heading">
+
+          <h2 id="modalTitle">
+            ${
+              escapeHtml(
+                r.title
+                ||
+                'POSTCARD RALLY'
+              )
+            }
+          </h2>
+
+          <div class="modal-date">
+            ${escapeHtml(r.dateLabel)}
+          </div>
+
+        </div>
+
+        <div
+          class="modal-special"
+          id="rallyMount"
+        ></div>
+      `;
+
+
+      window.CYNS_RALLY.mount(
+        document.getElementById(
+          'rallyMount'
+        )
+      );
+
+    }else{
+
+      modalContent.innerHTML =
+        informationHtml(r);
+
+    }
+
+
     modal.classList.add('show');
-    modal.setAttribute('aria-hidden','false');
-    document.body.style.overflow = 'hidden';
+
+    modal.setAttribute(
+      'aria-hidden',
+      'false'
+    );
+
+    document.body.style.overflow =
+      'hidden';
+
     modalPanel.scrollTop = 0;
+
+
     syncMachine();
-    if(updateHash) history.replaceState(null,'',`#${encodeURIComponent(r.id)}`);
+
+
+    if(updateHash){
+
+      history.replaceState(
+        null,
+        '',
+        `#${encodeURIComponent(r.id)}`
+      );
+
+    }
+
+
     return true;
   }
 
+
+  // =========================================================
+  // CLOSE MODAL
+  // =========================================================
+
   function closeModal(){
-    if(!modal.classList.contains('show')) return;
+
+    if(
+      !modal.classList.contains('show')
+    ){
+      return;
+    }
+
+
     modal.classList.remove('show');
-    modal.setAttribute('aria-hidden','true');
-    document.body.style.overflow = '';
+
+    modal.setAttribute(
+      'aria-hidden',
+      'true'
+    );
+
+    document.body.style.overflow =
+      '';
+
     activeId = null;
-    if(modalKicker){ modalKicker.hidden = false; modalKicker.textContent = 'RELEASED INFORMATION'; }
-    if(location.hash) history.replaceState(null,'',location.pathname + location.search);
+
+
+    if(modalKicker){
+
+      modalKicker.hidden = false;
+
+      modalKicker.textContent =
+        'RELEASED INFORMATION';
+
+    }
+
+
+    if(location.hash){
+
+      history.replaceState(
+        null,
+        '',
+        location.pathname
+        +
+        location.search
+      );
+
+    }
   }
+
+
+  // =========================================================
+  // PLAY GACHA
+  // =========================================================
 
   function playGacha(){
-    const target = nextCapsule();
-    if(running || !target) return;
+
+    const target =
+      nextCapsule();
+
+
+    if(
+      running
+      ||
+      !target
+    ){
+      return;
+    }
+
+
     running = true;
-    handle.classList.remove('turn');
-    dropBall.classList.remove('drop');
+
+
+    handle.classList.remove(
+      'turn'
+    );
+
+    dropBall.classList.remove(
+      'drop'
+    );
+
+
     void handle.offsetWidth;
-    handle.classList.add('turn');
-    setTimeout(() => dropBall.classList.add('drop'), 460);
-    setTimeout(() => {
-      openRelease(target.id, true);
-      running = false;
-    }, 1320);
+
+
+    handle.classList.add(
+      'turn'
+    );
+
+
+    setTimeout(
+      () =>
+        dropBall.classList.add(
+          'drop'
+        ),
+      460
+    );
+
+
+    setTimeout(
+      () => {
+
+        openRelease(
+          target.id,
+          true
+        );
+
+        running = false;
+
+      },
+      1320
+    );
   }
+
+
+  // =========================================================
+  // HASH
+  // =========================================================
 
   function openHash(){
-    const id = decodeURIComponent(location.hash.replace(/^#/,''));
-    if(!id) return;
+
+    const id =
+      decodeURIComponent(
+        location.hash.replace(
+          /^#/,
+          ''
+        )
+      );
+
+
+    if(!id){
+      return;
+    }
+
+
     if(id === 'about'){
+
       openAbout(false);
+
       return;
     }
+
+
     if(id === 'all'){
+
       openAllReleases(false);
+
       return;
     }
-    openRelease(id, false);
+
+
+    openRelease(
+      id,
+      false
+    );
   }
 
-  turnButton.addEventListener('click', playGacha);
-  if(aboutButton) aboutButton.addEventListener('click', () => openAbout(true));
-  document.getElementById('modalClose').addEventListener('click', closeModal);
-  modal.addEventListener('click', e => { if(e.target === modal) closeModal(); });
-  document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModal(); });
-  window.addEventListener('hashchange', openHash);
+
+  // =========================================================
+  // EVENTS
+  // =========================================================
+
+  turnButton.addEventListener(
+    'click',
+    playGacha
+  );
+
+
+  if(aboutButton){
+
+    aboutButton.addEventListener(
+      'click',
+      () =>
+        openAbout(true)
+    );
+
+  }
+
+
+  document
+    .getElementById(
+      'modalClose'
+    )
+    .addEventListener(
+      'click',
+      closeModal
+    );
+
+
+  modal.addEventListener(
+    'click',
+    e => {
+
+      if(e.target === modal){
+        closeModal();
+      }
+
+    }
+  );
+
+
+  document.addEventListener(
+    'keydown',
+    e => {
+
+      if(e.key === 'Escape'){
+        closeModal();
+      }
+
+    }
+  );
+
+
+  window.addEventListener(
+    'hashchange',
+    openHash
+  );
+
+
+  // =========================================================
+  // INITIALIZE
+  // =========================================================
 
   renderReleases();
+
   syncMachine();
+
   openHash();
+
 })();
