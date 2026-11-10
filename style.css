@@ -456,3 +456,58 @@ body::before{
 .release-all-thumb > img{
   object-fit:cover;
 }
+/* =========================================================
+   OPEN ALL mobile alignment fix
+   カードとサムネイルを上端・正方形で完全固定
+   ========================================================= */
+
+.release-all-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  align-items:start;
+  justify-items:stretch;
+}
+
+.release-all-card{
+  display:flex;
+  flex-direction:column;
+  align-self:start;
+  justify-self:stretch;
+  width:100%;
+  min-width:0;
+  margin:0;
+  padding:0;
+  vertical-align:top;
+}
+
+.release-all-thumb{
+  position:relative;
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  height:auto;
+  aspect-ratio:1 / 1;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  line-height:0;
+  background:#eceeef;
+}
+
+.release-all-thumb img{
+  position:absolute;
+  inset:0;
+  display:block;
+  width:100%;
+  height:100%;
+  margin:0;
+  object-fit:cover;
+}
+
+.release-all-meta{
+  display:block;
+  flex:0 0 auto;
+  width:100%;
+  margin:0;
+  padding-top:6px;
+}
