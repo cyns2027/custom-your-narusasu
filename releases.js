@@ -175,7 +175,7 @@ window.CYNS_RELEASES = [
     // モーダル本文。
     // 文章を配列形式で追加する。
     body: [
-      "NARUTO × SASUKE ANTHOLOGY 2027『そのあと、ふたりで。』の制作が決定しました！"
+      "NARUTO × SASUKE ANTHOLOGY 2027『そのあと、ふたりで。』の制作が決定しました！",
 "2027年春、詳細公開予定🍥🍅"],
 
     // モーダル下部CTAの文字。
