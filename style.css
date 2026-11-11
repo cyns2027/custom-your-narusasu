@@ -521,3 +521,22 @@ body::before{
   right:18px;
   left:auto;
 }
+/* =========================================================
+   OPEN ALL desktop layout
+   PCのみモーダルを広げて4列表示
+   ========================================================= */
+
+@media (min-width: 900px){
+
+  /* OPEN ALLを開いている時だけモーダルを広げる */
+  #modalPanel:has(.release-all-grid){
+    width:min(92vw, 1100px);
+    max-width:1100px;
+  }
+
+  /* PCでは4列 */
+  .release-all-grid{
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+    gap:14px;
+  }
+}
