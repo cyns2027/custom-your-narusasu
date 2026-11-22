@@ -3,6 +3,8 @@
 - [特設サイト TOP](https://cyns2027.github.io/custom-your-narusasu/)
 - [NARUSASU お題ガチャ](https://cyns2027.github.io/custom-your-narusasu/gacha/)
 - [アンソロ募集要項](https://cyns2027.github.io/custom-your-narusasu/anthology/invitation/)
+- [ポストカード＆アクリルチャーム招待ページ](https://cyns2027.github.io/custom-your-narusasu/invitation/postcard-charm/)
+
 
 # CUSTOM YOUR NARUSASU — Production v4
 
